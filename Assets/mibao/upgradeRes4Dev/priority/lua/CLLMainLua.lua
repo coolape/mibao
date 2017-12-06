@@ -39,7 +39,7 @@ do
     -- end
 
     --设置帧率
-    Application.targetFrameRate = 30;
+    Application.targetFrameRate = 10;
     --QualitySettings.SetQualityLevel (1, false);
     Time.fixedDeltaTime = 0.1
 

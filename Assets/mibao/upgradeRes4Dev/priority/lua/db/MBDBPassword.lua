@@ -33,16 +33,16 @@
         return mData;
     end
 
-    function MBDBPassword.addOrUpdate(oldKey, data)
+    function MBDBPassword.addOrUpdate(data)
         MBDBPassword.init();
-        if not isNilOrEmpty(oldKey) then
-            for i = 0, mData.Count - 1 do
-                if MapEx.getString(mData[i], "platform") == oldKey then
-                    mData:RemoveAt(i);
-                    break
-                end
-            end
-        end
+        --if not isNilOrEmpty(oldKey) then
+        --    for i = 0, mData.Count - 1 do
+        --        if MapEx.getString(mData[i], "platform") == oldKey then
+        --            mData:RemoveAt(i);
+        --            break
+        --        end
+        --    end
+        --end
 
         local isUpgrade = false
         for i = 0, mData.Count - 1 do
@@ -58,14 +58,14 @@
         MBDBPassword.save();
     end
 
-    function MBDBPassword.remove(key)
+    function MBDBPassword.remove(key, user)
         if isNilOrEmpty(key) then
             return;
         end
 
         MBDBPassword.init();
         for i = 0, mData.Count - 1 do
-            if MapEx.getString(mData[i], "platform") == key then
+            if MapEx.getString(mData[i], "platform") == key and MapEx.getString(mData[i], "user") == user then
                 mData:RemoveAt(i);
                 break
             end

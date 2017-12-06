@@ -25,11 +25,6 @@ do
     -- 设置数据
     function MBPPasswordSaveEditor.setData(paras)
         mData = paras;
-        if mData then
-            oldPlatform = MapEx.getString(mData, "platform");
-        else
-            oldPlatform = nil;
-        end
     end
 
     -- 显示，在c#中。show为调用refresh，show和refresh的区别在于，当页面已经显示了的情况，当页面再次出现在最上层时，只会调用refresh
@@ -83,13 +78,14 @@ do
                 callback = function(key)
                     local m = objs.inputRoot:getValue();
                     MapEx.set(m, "psd", EnAndDecryption.encoder(objs.InputPassword.value, key));
-                    MBDBPassword.addOrUpdate(oldPlatform, m)
+                    MBDBPassword.addOrUpdate(m)
                     hideTopPanel();
                 end })
         elseif goName == "ButtonDel" then
             CLUIUtl.showConfirm("确定要删除该记录？",
             function()
-                MBDBPassword.remove(oldPlatform);
+                MBDBPassword.remove(MapEx.getString(mData, "platform"), MapEx.getString(mData, "user"));
+                hideTopPanel();
             end, nil);
         end
     end

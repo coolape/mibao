@@ -12,7 +12,7 @@ mibao/upgradeRes4Publish/priority/localization/Chinese.txt,1f78583fc49e1d7c3f2b9
 mibao/upgradeRes4Publish/priority/lua/CLLMainLua.lua,ea951259ed7ea84793a101231e1e148b
 mibao/upgradeRes4Publish/priority/lua/cfg/DBCfg.lua,427084a1058bb64c0fda4bc80967e709
 mibao/upgradeRes4Publish/priority/lua/cfg/DBCfgTool.lua,a6760e05dcc5f91202e3659179a464e7
-mibao/upgradeRes4Publish/priority/lua/db/MBDBPassword.lua,5e26c7defc2cbade70b4571d0d0f242c
+mibao/upgradeRes4Publish/priority/lua/db/MBDBPassword.lua,a692bfd3e761b7f9a10b8ed1c6580c08
 mibao/upgradeRes4Publish/priority/lua/net/NetDispatch.lua,58cab271f4a12d3b21e7cb7a73e62159
 mibao/upgradeRes4Publish/priority/lua/public/CLLInclude.lua,f5b3e36db8a478b10c747529de6f0e4a
 mibao/upgradeRes4Publish/priority/lua/public/CLLPrefs.lua,f74fc38712a41cb80abe2fcd31f6d6fb
@@ -35,7 +35,7 @@ mibao/upgradeRes4Publish/priority/lua/ui/panel/CLLPWWWProgress.lua,5a1c194ae5128
 mibao/upgradeRes4Publish/priority/lua/ui/panel/MBPLogin.lua,986475c775b7b12488683f3e4285a854
 mibao/upgradeRes4Publish/priority/lua/ui/panel/MBPMain.lua,f9306cbca8a8b6b107b6709083bc5d97
 mibao/upgradeRes4Publish/priority/lua/ui/panel/MBPPasswordSave.lua,3c30600946581ef087e656eac9f03584
-mibao/upgradeRes4Publish/priority/lua/ui/panel/MBPPasswordSaveEditor.lua,19f49b49a15738ecf1993974f78e241e
+mibao/upgradeRes4Publish/priority/lua/ui/panel/MBPPasswordSaveEditor.lua,9cfbf0f5fd874b379abb97687e335320
 mibao/upgradeRes4Publish/priority/lua/ui/panel/MBPSecretKey.lua,e64028aaddad018634498703f36f2c2a
 mibao/upgradeRes4Publish/priority/ui/other/Android/AlertRoot.unity3d,8cc370a11e0f5f7dc2bb3010d23f341f
 mibao/upgradeRes4Publish/priority/ui/panel/Android/PanelBackplate.unity3d,8c96b0c4311a626e8327a0e80717918a
@@ -45,8 +45,8 @@ mibao/upgradeRes4Publish/priority/ui/panel/Android/PanelHotWheel.unity3d,30dea61
 mibao/upgradeRes4Publish/priority/ui/panel/Android/PanelLogin.unity3d,2af6ba20c9150916ccc1ce64a4f2f078
 mibao/upgradeRes4Publish/priority/ui/panel/Android/PanelMain.unity3d,f66fe5c0782d9a76602e28d4468931db
 mibao/upgradeRes4Publish/priority/ui/panel/Android/PanelMask4Panel.unity3d,1272559f7de62c2c90b2c12c39043544
-mibao/upgradeRes4Publish/priority/ui/panel/Android/PanelPasswordSave.unity3d,1e861d770fa23bcf1fd719d217c881ba
-mibao/upgradeRes4Publish/priority/ui/panel/Android/PanelPasswordSaveEditor.unity3d,f204b3280d715150abdc8442308ce7e1
+mibao/upgradeRes4Publish/priority/ui/panel/Android/PanelPasswordSave.unity3d,2adbf054f90b49f25a7309dbcf81e42d
+mibao/upgradeRes4Publish/priority/ui/panel/Android/PanelPasswordSaveEditor.unity3d,f64667a00239f1d5feb0b2571a47d927
 mibao/upgradeRes4Publish/priority/ui/panel/Android/PanelSecretKey.unity3d,bc393d993524b657dbe20877b7c53ca4
 mibao/upgradeRes4Publish/priority/ui/panel/Android/PanelSplash.unity3d,84347b4a6a9716aa2e15efe5bd406ea1
 mibao/upgradeRes4Publish/priority/ui/panel/Android/PanelStart.unity3d,c07816b5329e91237e31ddd4843916c8
