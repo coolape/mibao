@@ -61,6 +61,8 @@ do
             hideTopPanel();
         elseif (goName == "ButtonAdd") then
             getPanelAsy("PanelPasswordSaveEditor", onLoadedPanelTT, nil)
+        elseif goName == "ButtonSearch" then
+            
         end
     end
 

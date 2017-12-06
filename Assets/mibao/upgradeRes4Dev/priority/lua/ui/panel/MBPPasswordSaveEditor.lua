@@ -18,21 +18,27 @@ do
 
         ---@type CLUIInputRoot
         objs.inputRoot = getCC(transform, "PanelList/Grid", "CLUIInputRoot")
+        objs.InputPassword = getCC(transform, "PanelList/Grid/InputPassword", "UIInput")
     end
 
     -- 设置数据
     function MBPPasswordSaveEditor.setData(paras)
         mData = paras;
-        oldPlatform = MapEx.getString(mData, "platform");
+        if mData then
+            oldPlatform = MapEx.getString(mData, "platform");
+        else
+            oldPlatform = nil;
+        end
     end
 
     -- 显示，在c#中。show为调用refresh，show和refresh的区别在于，当页面已经显示了的情况，当页面再次出现在最上层时，只会调用refresh
     function MBPPasswordSaveEditor.show()
+        objs.inputRoot:setValue(mData)
+        objs.InputPassword.value = "";
     end
 
     -- 刷新
     function MBPPasswordSaveEditor.refresh()
-        objs.inputRoot:setValue(mData)
     end
 
     -- 关闭页面
@@ -55,14 +61,27 @@ do
         local goName = go.name;
         if (goName == "ButtonBack") then
             hideTopPanel();
+        elseif goName == "ButtonShowPsd" then
+            getPanelAsy("PanelSecretKey", onLoadedPanelTT, { cmd = "get",
+                function(key)
+                    objs.InputPassword.value = EnAndDecryption.decoder(MapEx.getString(mData, "psd"), key);
+                end })
         elseif goName == "ButtonAdd" then
             local msg = objs.inputRoot:checkValid();
             if not isNilOrEmpty(msg) then
                 CLAlert.add(msg);
                 return;
             end
-            MBDBPassword.addOrUpdate(oldPlatform, objs.inputRoot:getValue())
-            hideHotWheel();
+
+            getPanelAsy("PanelSecretKey", onLoadedPanelTT, { cmd = "set",
+                function(key)
+                    local m = objs.inputRoot:getValue();
+                    MapEx.set(m, "psd", EnAndDecryption.encoder(objs.InputPassword.value, key));
+                    MBDBPassword.addOrUpdate(oldPlatform, m)
+                    hideTopPanel();
+                end })
+        elseif goName == "ButtonDel" then
+            MBDBPassword.remove(oldPlatform);
         end
     end
 

@@ -172,6 +172,7 @@ do
     B2Int = CS.Coolape.B2Int
     AngleEx = CS.Coolape.AngleEx
     CLMyGrid = CS.Coolape.CLMyGrid
+    EnAndDecryption = CS.Coolape.EnAndDecryption
     -------------------------------------------------------
     --
     MyCfg = CS.MyCfg;

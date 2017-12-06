@@ -166,6 +166,7 @@ public static class XluaGenCodeConfig
 		typeof(EffectProgress),
 		typeof(B2Int),
 		typeof(CLUIInputRoot),
+		typeof(EnAndDecryption),
 	};
 
 	//C#静态调用Lua的配置（包括事件的原型），仅可以配delegate，interface
