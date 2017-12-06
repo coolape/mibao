@@ -63,7 +63,7 @@ do
             hideTopPanel();
         elseif goName == "ButtonShowPsd" then
             getPanelAsy("PanelSecretKey", onLoadedPanelTT, { cmd = "get",
-                function(key)
+                callback = function(key)
                     objs.InputPassword.value = EnAndDecryption.decoder(MapEx.getString(mData, "psd"), key);
                 end })
         elseif goName == "ButtonAdd" then
@@ -74,14 +74,17 @@ do
             end
 
             getPanelAsy("PanelSecretKey", onLoadedPanelTT, { cmd = "set",
-                function(key)
+                callback = function(key)
                     local m = objs.inputRoot:getValue();
                     MapEx.set(m, "psd", EnAndDecryption.encoder(objs.InputPassword.value, key));
                     MBDBPassword.addOrUpdate(oldPlatform, m)
                     hideTopPanel();
                 end })
         elseif goName == "ButtonDel" then
-            MBDBPassword.remove(oldPlatform);
+            CLUIUtl.showConfirm("确定要删除该记录？",
+            function()
+                MBDBPassword.remove(oldPlatform);
+            end, nil);
         end
     end
 

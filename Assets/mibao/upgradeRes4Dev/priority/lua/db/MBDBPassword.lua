@@ -1,6 +1,6 @@
 ﻿do
     MBDBPassword = {}
-    local path = Utl.chgToSDCard(joinStr(Application.persistentDataPath, "/", __uid__, "_", "psdSave.d"));
+    local path = Utl.chgToSDCard(joinStr(Application.persistentDataPath, "/coolape/mibao/", __uid__, "_", "psdSave.d"));
     ---@type System.Collections.ArrayList
     local mData = nil;
 
