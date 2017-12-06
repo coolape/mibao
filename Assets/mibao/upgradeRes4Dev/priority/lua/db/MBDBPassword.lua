@@ -19,8 +19,9 @@
     end
 
     function MBDBPassword.save()
-        MBDBPassword.init()
-
+        if mData == nil then
+            return
+        end
         local ms = MemoryStream();
         B2OutputStream.writeObject(ms, mData);
         Directory.CreateDirectory(Path.GetDirectoryName(path));

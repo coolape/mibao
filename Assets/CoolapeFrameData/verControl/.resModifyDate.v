@@ -31,7 +31,7 @@
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/localization.meta,131569146220000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua.meta,131569146220000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui.meta,131569146220000000
-/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/atlas/atlasAllReal.prefab,131570102320000000
+/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/atlas/atlasAllReal.prefab,131570239390000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/atlas/atlasAllReal.prefab.meta,131569146230000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/localization/Chinese.txt,131569146240000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/localization/Chinese.txt.meta,131569146260000000
@@ -47,11 +47,11 @@
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/cfg/DBCfg.lua.meta,131569146260000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/cfg/DBCfgTool.lua,131539176830000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/cfg/DBCfgTool.lua.meta,131569146260000000
-/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/db/MBDBPassword.lua,131570068920000000
+/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/db/MBDBPassword.lua,131570238840000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/db/MBDBPassword.lua.meta,131569379420000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/net/NetDispatch.lua,131569146240000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/net/NetDispatch.lua.meta,131569146260000000
-/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/public/CLLInclude.lua,131570030710000000
+/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/public/CLLInclude.lua,131570147760000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/public/CLLInclude.lua.meta,131569146260000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/public/CLLPrefs.lua,131569146240000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/public/CLLPrefs.lua.meta,131569146260000000
@@ -91,11 +91,11 @@
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/CLLPWWWProgress.lua.meta,131569146260000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPLogin.lua,131569411570000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPLogin.lua.meta,131569237850000000
-/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPMain.lua,131569353080000000
+/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPMain.lua,131570232800000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPMain.lua.meta,131569310980000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSave.lua,131570047930000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSave.lua.meta,131569354570000000
-/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSaveEditor.lua,131570101020000000
+/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSaveEditor.lua,131570235520000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSaveEditor.lua.meta,131569397870000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPSecretKey.lua,131570038130000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPSecretKey.lua.meta,131569440490000000
@@ -120,7 +120,7 @@
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelMask4Panel.prefab.meta,131569146260000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelPasswordSave.prefab,131570092520000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelPasswordSave.prefab.meta,131569334900000000
-/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelPasswordSaveEditor.prefab,131570102320000000
+/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelPasswordSaveEditor.prefab,131570239390000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelPasswordSaveEditor.prefab.meta,131569380720000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelSecretKey.prefab,131570102320000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelSecretKey.prefab.meta,131569440250000000

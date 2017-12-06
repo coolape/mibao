@@ -19,6 +19,7 @@ do
         ---@type CLUIInputRoot
         objs.inputRoot = getCC(transform, "PanelList/Grid", "CLUIInputRoot")
         objs.InputPassword = getCC(transform, "PanelList/Grid/InputPassword", "UIInput")
+        objs.ButtonDel = getChild(transform, "AnchorTop/offset/ButtonDel").gameObject;
     end
 
     -- 设置数据
@@ -35,6 +36,11 @@ do
     function MBPPasswordSaveEditor.show()
         objs.inputRoot:setValue(mData)
         objs.InputPassword.value = "";
+        if mData == nil then
+            SetActive(objs.ButtonDel, false)
+        else
+            SetActive(objs.ButtonDel, true)
+        end
     end
 
     -- 刷新

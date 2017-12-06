@@ -173,6 +173,7 @@ do
     AngleEx = CS.Coolape.AngleEx
     CLMyGrid = CS.Coolape.CLMyGrid
     EnAndDecryption = CS.Coolape.EnAndDecryption
+    --AndroidStatusBar = CS.Coolape.AndroidStatusBar
     -------------------------------------------------------
     --
     MyCfg = CS.MyCfg;
