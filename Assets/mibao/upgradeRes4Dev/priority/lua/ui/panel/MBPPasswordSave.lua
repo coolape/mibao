@@ -104,7 +104,8 @@ do
         local ret = {}
         local list = MBDBPassword.getData();
         for i = 0, list.Count - 1 do
-            if string.find(MapEx.getString(list[i], "platform"), key) or string.find(MapEx.getString(list[i], "desc"), key) then
+            if string.find(string.upper(MapEx.getString(list[i], "platform")), string.upper(key))
+            or string.find(string.upper(MapEx.getString(list[i], "desc")), string.upper(key)) then
                 table.insert(ret, list[i])
             end
         end
