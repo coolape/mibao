@@ -31,7 +31,7 @@
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/localization.meta,131569146220000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua.meta,131569146220000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui.meta,131569146220000000
-/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/atlas/atlasAllReal.prefab,131570898900000000
+/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/atlas/atlasAllReal.prefab,131571055220000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/atlas/atlasAllReal.prefab.meta,131569146230000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/localization/Chinese.txt,131569146240000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/localization/Chinese.txt.meta,131569146260000000
@@ -95,7 +95,7 @@
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPMain.lua.meta,131569310980000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSave.lua,131570921210000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSave.lua.meta,131569354570000000
-/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSaveEditor.lua,131570252790000000
+/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSaveEditor.lua,131571008740000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSaveEditor.lua.meta,131569397870000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPSecretKey.lua,131570038130000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPSecretKey.lua.meta,131569440490000000
@@ -112,15 +112,15 @@
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelConfirm.prefab.meta,131569146250000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelHotWheel.prefab,131569282050000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelHotWheel.prefab.meta,131569146250000000
-/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelLogin.prefab,131569302480000000
+/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelLogin.prefab,131571049340000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelLogin.prefab.meta,131569231480000000
-/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelMain.prefab,131570889460000000
+/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelMain.prefab,131571049340000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelMain.prefab.meta,131569311620000000
-/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelMask4Panel.prefab,131570889460000000
+/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelMask4Panel.prefab,131571049340000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelMask4Panel.prefab.meta,131569146260000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelPasswordSave.prefab,131570895580000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelPasswordSave.prefab.meta,131569334900000000
-/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelPasswordSaveEditor.prefab,131570837410000000
+/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelPasswordSaveEditor.prefab,131571055220000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelPasswordSaveEditor.prefab.meta,131569380720000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelSecretKey.prefab,131570338820000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui/panel/PanelSecretKey.prefab.meta,131569440250000000

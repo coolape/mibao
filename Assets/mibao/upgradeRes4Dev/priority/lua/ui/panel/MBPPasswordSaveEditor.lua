@@ -16,6 +16,13 @@ do
         上的组件：getChild(transform, "offset", "Progress BarHong"):GetComponent("UISlider");
         --]]
 
+        objs.Content = getCC(transform, "PanelList", "UIPanel")
+        objs.Content.clipOffset = Vector2.zero;
+        objs.Content.baseClipRegion = MBPMain.contentRect;
+        ---@type UIScrollView
+        objs.scrollView = objs.Content:GetComponent("UIScrollView");
+        --objs.grid:setOldClip(objs.Content.clipOffset, objs.Content.transform.localPosition, objs.grid.transform.localPosition)
+
         ---@type CLUIInputRoot
         objs.inputRoot = getCC(transform, "PanelList/Grid", "CLUIInputRoot")
         objs.InputPassword = getCC(transform, "PanelList/Grid/InputPassword", "UIInput")
@@ -36,6 +43,7 @@ do
         else
             SetActive(objs.ButtonDel, true)
         end
+        objs.scrollView:ResetPosition();
     end
 
     -- 刷新
