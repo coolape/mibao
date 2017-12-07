@@ -85,6 +85,8 @@ do
     UIAtlas = CS.UIAtlas;
     UILocalize = CS.UILocalize;
     UIPlayTween = CS.UIPlayTween;
+    UIRoot = CS.UIRoot
+    UIPanel = CS.UIPanel
     PlayerPrefs = CS.UnityEngine.PlayerPrefs
     SystemInfo = CS.UnityEngine.SystemInfo
     Shader = CS.UnityEngine.Shader

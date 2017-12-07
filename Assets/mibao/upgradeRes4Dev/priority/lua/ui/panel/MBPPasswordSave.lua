@@ -19,6 +19,13 @@ do
         ---@type TweenPosition
         objs.search = getCC(transform, "AnchorTop/search", "TweenPosition")
         objs.InputSearchKey = getCC(objs.search.transform, "InputSearchKey", "UIInput")
+
+        objs.Content = getCC(transform, "PanelList", "UIPanel")
+        objs.Content.clipOffset = Vector2.zero;
+        objs.Content.baseClipRegion = MBPMain.contentRect;
+        ---@type UIScrollView
+        objs.scrollView = objs.Content:GetComponent("UIScrollView");
+        objs.grid:setOldClip(objs.Content.clipOffset, objs.Content.transform.localPosition, objs.grid.transform.localPosition)
     end
 
     -- 设置数据
@@ -29,6 +36,9 @@ do
     function MBPPasswordSave.show()
         isShowingSearch = false;
         objs.search:ResetToBeginning();
+        csSelf:invoke4Lua(function()
+            objs.scrollView:ResetPosition();
+        end, 0.1);
     end
 
     function MBPPasswordSave.initCell(cell, data)
@@ -36,6 +46,7 @@ do
     end
 
     function MBPPasswordSave.onClickCell(cell)
+        MBPPasswordSave.hideSearch()
         local data = cell.luaTable.getData();
         getPanelAsy("PanelPasswordSaveEditor", onLoadedPanelTT, data)
     end
@@ -43,6 +54,7 @@ do
     -- 刷新
     function MBPPasswordSave.refresh()
         objs.grid:setList(MBDBPassword.getData(), MBPPasswordSave.initCell);
+        objs.scrollView:ResetPosition()
     end
 
     -- 关闭页面
@@ -77,6 +89,14 @@ do
                 return
             end
             MBPPasswordSave.search(objs.InputSearchKey.value)
+        elseif goName == "SpriteBg" then
+            MBPPasswordSave.hideSearch()
+        end
+    end
+    function MBPPasswordSave.hideSearch()
+        if isShowingSearch then
+            isShowingSearch = false;
+            objs.search:Play(isShowingSearch)
         end
     end
 
@@ -89,6 +109,9 @@ do
             end
         end
 
+        if #ret == 0 then
+            CLAlert.add("无数据");
+        end
         objs.grid:setList(ret, MBPPasswordSave.initCell);
     end
 

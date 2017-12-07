@@ -4,14 +4,27 @@ do
 
     local csSelf = nil;
     local transform = nil;
+    MBPMain.sizeAdjust = 1;
+    MBPMain.contentRect = Rect.zero;
+    local _BottomHeight_ =150
+    local _TopHeight_ = 150
+    local objs = {}
 
     -- 初始化，只会调用一次
     function MBPMain.init(csObj)
         csSelf = csObj;
         transform = csObj.transform;
-        --[[
-        上的组件：getChild(transform, "offset", "Progress BarHong"):GetComponent("UISlider");
-        --]]
+
+        MBPMain.sizeAdjust = UIRoot.GetPixelSizeAdjustment(csSelf.gameObject);
+        MBPMain.contentRect = Vector4(0, 0,
+        Screen.width * MBPMain.sizeAdjust,
+        Screen.height * MBPMain.sizeAdjust - (_BottomHeight_ + _TopHeight_));
+
+        objs.Content = getCC(transform, "PanelContent", "UIPanel")
+        objs.Content.clipOffset = Vector2.zero;
+        objs.Content.baseClipRegion = MBPMain.contentRect;
+        ---@type UIScrollView
+        objs.scrollView = objs.Content:GetComponent("UIScrollView");
     end
 
     -- 设置数据
@@ -20,6 +33,7 @@ do
 
     -- 显示，在c#中。show为调用refresh，show和refresh的区别在于，当页面已经显示了的情况，当页面再次出现在最上层时，只会调用refresh
     function MBPMain.show()
+        objs.scrollView:ResetPosition()
     end
 
     -- 刷新
