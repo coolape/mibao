@@ -31,7 +31,7 @@
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/localization.meta,131569146220000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua.meta,131569146220000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/ui.meta,131569146220000000
-/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/atlas/atlasAllReal.prefab,131571055220000000
+/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/atlas/atlasAllReal.prefab,131571059230000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/atlas/atlasAllReal.prefab.meta,131569146230000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/localization/Chinese.txt,131569146240000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/localization/Chinese.txt.meta,131569146260000000
@@ -93,9 +93,9 @@
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPLogin.lua.meta,131569237850000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPMain.lua,131570869450000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPMain.lua.meta,131569310980000000
-/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSave.lua,131570921210000000
+/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSave.lua,131571061020000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSave.lua.meta,131569354570000000
-/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSaveEditor.lua,131571008740000000
+/Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSaveEditor.lua,131571057790000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSaveEditor.lua.meta,131569397870000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPSecretKey.lua,131570038130000000
 /Users/chenbin/Documents/working/projects/mibao/Assets/mibao/upgradeRes4Dev/priority/lua/ui/panel/MBPSecretKey.lua.meta,131569440490000000
