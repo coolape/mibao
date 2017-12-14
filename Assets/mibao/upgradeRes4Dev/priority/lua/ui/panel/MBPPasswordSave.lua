@@ -39,6 +39,8 @@ do
         csSelf:invoke4Lua(function()
             objs.scrollView:ResetPosition();
         end, 0.1);
+        objs.grid:setList(MBDBPassword.getData(), MBPPasswordSave.initCell);
+        objs.scrollView:ResetPosition()
     end
 
     function MBPPasswordSave.initCell(cell, data)
@@ -53,8 +55,7 @@ do
 
     -- 刷新
     function MBPPasswordSave.refresh()
-        objs.grid:setList(MBDBPassword.getData(), MBPPasswordSave.initCell);
-        objs.scrollView:ResetPosition()
+        objs.grid:refreshContentOnly(MBDBPassword.getData());
     end
 
     -- 关闭页面
