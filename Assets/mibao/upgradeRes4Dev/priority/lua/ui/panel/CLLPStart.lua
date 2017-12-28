@@ -34,7 +34,8 @@ do
         require("cfg.DBCfg");
         require("db.MBDBPassword");
         -- 网络
-        --Net.self:setLua();
+        Net.self:setLua();
+        CLLNet.init();
         --CallNet = PorotocolService.callNet
 
         --KKPushMsg.init(uidx);

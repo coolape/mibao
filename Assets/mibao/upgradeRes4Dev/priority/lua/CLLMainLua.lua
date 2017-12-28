@@ -64,7 +64,7 @@ do
 
     -- 当离线调用
     function CLLMainLua.onOffline()
-        procOffLine();
+        --procOffLine();
     end
 
     -- 退出游戏确认

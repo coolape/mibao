@@ -48,6 +48,10 @@ do
 
         contentLogin:Play(true)
         contentRegist:Play(false)
+
+        Net.self:setLua();
+        CLLNet.init();
+        Net.self:connectGame("127.0.0.1", 2018)
     end
 
     -- 刷新
@@ -60,6 +64,10 @@ do
 
     -- 网络请求的回调；cmd：指命，succ：成功失败，msg：消息；paras：服务器下行数据
     function MBPLogin.procNetwork (cmd, succ, msg, paras)
+        if cmd == "connectCallback" then
+            print("send")
+            Net.self:send({a=1;b="测试", c="chbin", [123] = true});
+        end
         --[[
         if(succ == 1) then
           if(cmd == "xxx") then

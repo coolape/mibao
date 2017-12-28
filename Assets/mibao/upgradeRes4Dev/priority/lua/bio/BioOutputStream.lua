@@ -134,7 +134,7 @@
             BioOutputStream.writeBoolean(os, obj);
         else
             --//throw new IOException("unsupported obj then" + obj);
-            printe("B2IO unsupported error then type=[" .. tostring(objType) .. "] val=[" + obj .. "]");
+            print("B2IO unsupported error then type=[" .. tostring(objType) .. "] val=[" + obj .. "]");
         end
     end
 
