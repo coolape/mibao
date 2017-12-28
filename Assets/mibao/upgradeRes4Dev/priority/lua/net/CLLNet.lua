@@ -31,10 +31,16 @@ do
         end
         local usedLen = buffer.Position;
         if (usedLen + needLen <= tatalLen) then
-            ret = BioUtl.readObject(buffer);
+            local lessBuff = Utl.read4MemoryStream(buffer, 0, needLen);
+            ret = BioUtl.readObject(lessBuff);
         else
             --说明长度不够
             buffer.Position = oldPos;
+        end
+        if ret then
+            for k,v in pairs(ret) do
+                print(k,v);
+            end
         end
         return ret;
     end
@@ -70,7 +76,7 @@ do
                 CLPanelManager.topPanel:procNetwork("outofNetConnect", -9999, "outofNetConnect", nil);
             end
         else
-            GboGmSvBuilder.onCallNet.disp(map);
+            --GboGmSvBuilder.onCallNet.disp(map);
         end
     end
 

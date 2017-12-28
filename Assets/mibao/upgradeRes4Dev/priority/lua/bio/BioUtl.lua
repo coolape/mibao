@@ -13,6 +13,7 @@ do
             os = nil;
             return bytes;
         else
+            print(result)
             return nil;
         end
     end
@@ -25,6 +26,7 @@ do
             is = nil;
             return result;
         else
+            print(result)
             return nil;
         end
     end
