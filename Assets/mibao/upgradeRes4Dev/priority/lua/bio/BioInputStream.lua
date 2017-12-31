@@ -19,6 +19,11 @@
         self.pos = 1;
     end
 
+    function LuaB2InputStream:init(v)
+        self.bytes = v;
+        self.pos = 1;
+    end
+
     function LuaB2InputStream:readByte()
         local ret = string.byte(self.bytes, self.pos);
         self.pos = self.pos + 1;

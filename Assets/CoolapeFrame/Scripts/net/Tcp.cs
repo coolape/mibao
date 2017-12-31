@@ -184,7 +184,7 @@ namespace Coolape
 								return null;
 							} else {
 								if (o is string) {
-									return System.Text.Encoding.Default.GetBytes (o as string);
+									return System.Text.Encoding.UTF8.GetBytes (o as string);
 								} else if (o is byte[]) {
 									return o as byte[];
 								} else {

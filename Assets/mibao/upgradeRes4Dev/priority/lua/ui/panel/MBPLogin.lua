@@ -1,5 +1,6 @@
 ﻿-- xx界面
 do
+    require("net.NetProtoClient")
     MBPLogin = {}
 
     local csSelf = nil;
@@ -63,10 +64,17 @@ do
     end
 
     -- 网络请求的回调；cmd：指命，succ：成功失败，msg：消息；paras：服务器下行数据
-    function MBPLogin.procNetwork (cmd, succ, msg, paras)
+    function MBPLogin.procNetwork (cmd, succ, msg, data)
         if cmd == "connectCallback" then
             print("send")
-            Net.self:send({a=1;b="测试", c="chbin", [123] = true});
+            Net.self:send(NetProto.send.login("123", "大"));
+        elseif  cmd == "login" then
+            print("login")
+            --print(data)
+            print(BioUtl.bio2int(data.userInfor.ver))
+            --for k,v in pairs(data.userInfor) do
+            --    print(k,v)
+            --end
         end
         --[[
         if(succ == 1) then

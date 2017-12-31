@@ -1,6 +1,7 @@
 ﻿--- 网络下行数据调度器
 do
     require("bio.BioUtl")
+    require("net.NetProtoClient")
     CLLNet = {}
     local csSelf;
     local __maxLen = 1024 * 1024;
@@ -37,11 +38,6 @@ do
             --说明长度不够
             buffer.Position = oldPos;
         end
-        if ret then
-            for k,v in pairs(ret) do
-                print(k,v);
-            end
-        end
         return ret;
     end
 
@@ -76,52 +72,38 @@ do
                 CLPanelManager.topPanel:procNetwork("outofNetConnect", -9999, "outofNetConnect", nil);
             end
         else
-            --GboGmSvBuilder.onCallNet.disp(map);
+            local dispatchInfor = NetProto.dispatch[map[0]]
+            if dispatchInfor then
+                local data = dispatchInfor.onReceive(map);
+                CLLNet.dispatch(data)
+            end
         end
     end
 
-    function CLLNet.dispatch(...)
-        local paras = { ... };
-        local len = table.getn(paras);
-
-        local cmd = paras[1]; -- 接口名
-        local retvalue = paras[len]; -- 接口返回结果
-
-        local data = {};
-        if (len - 1 > 2) then
-            for i = 2, len - 1 do
-                -- data:Add(paras[i]);  -- 取得返回数据
-                table.insert(data, paras[i]);
-            end
-        else
-            data = paras[2];
-        end
-
+    function CLLNet.dispatch(map)
+        local cmd = map.cmd; -- 接口名
+        local retInfor = map.retInfor;
         -- 解密bio
-        retvalue.succ = NumEx.bio2Int(retvalue.succ);
-        local succ = retvalue.succ;
-        local msg = retvalue.msg;
-        if (succ ~= 0) then
-            retvalue.msg = Localization.Get("Error_" .. succ);
+        retInfor.code = BioUtl.bio2int(retInfor.code);
+        local succ = retInfor.code;
+        local msg = retInfor.msg;
+        if (succ ~= 1) then
+            retInfor.msg = Localization.Get("Error_" .. succ);
             CLAlert.add(msg, Color.red, 1);
         else -- success
-            CLLNet.cacheData(cmd, data);
+            CLLNet.cacheData(cmd, map);
         end
-
-        -- CLPanelManager.topPanel:onNetwork (cmd, retvalue.succ, nil);
-        -- 因为c#调用时已经放在主线程里了，因此可以直接调用procNetwork
-        -- CLPanelManager.topPanel:procNetwork (cmd, retvalue.succ, retvalue.msg, data);
 
         -- 通知所有显示的页面
         if (CLPanelManager.panelRetainLayer ~= nil and CLPanelManager.panelRetainLayer.Count > 0) then
             local showingPanels = CLPanelManager.panelRetainLayer:ToArray();
             for i = 0, showingPanels.Length - 1 do
-                showingPanels[i]:procNetwork(cmd, succ, msg, data);
+                showingPanels[i]:procNetwork(cmd, succ, msg, map);
             end
             showingPanels = nil;
         else
             if (CLPanelManager.topPanel ~= nil) then
-                CLPanelManager.topPanel:procNetwork(cmd, succ, msg, data);
+                CLPanelManager.topPanel:procNetwork(cmd, succ, msg, map);
             end
         end
     end
