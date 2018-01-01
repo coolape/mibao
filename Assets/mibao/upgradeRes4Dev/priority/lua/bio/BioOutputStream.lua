@@ -9,6 +9,14 @@
     local StringB2TypeList = BioType.StringB2TypeList;
     local MapB2TypeList = BioType.MapB2TypeList;
     local ListB2TypeList = BioType.ListB2TypeList
+
+    local type = type
+    local sub = string.sub
+    local strupper = string.upper;
+    local strlen = string.len;
+    local strbyte = string.byte
+    local strchar = string.char
+    local floorInt = math.floor
     --===================================================
 
     -- 原始数据类型
@@ -33,7 +41,7 @@
         --nil, boolean, number, string, userdata, function, thread, table
         local val = nil;
         local t = type(obj);
-        val = BioOutputStream.DataType[string.upper(type(obj))];
+        val = BioOutputStream.DataType[strupper(type(obj))];
         if val == nil then
             val = "undefined";
         end
@@ -44,7 +52,7 @@
         local val = nil;
         local t = type(obj);
         if t == "number" then
-            local minInt = math.floor(obj);
+            local minInt = floorInt(obj);
             if minInt == obj then
                 -- 说明是整数
                 if (obj >= -128 and obj <= 127) then
@@ -87,8 +95,11 @@
         self.content = {}
     end
 
+    function LuaB2OutputStream:init(v)
+    end
+
     function LuaB2OutputStream:writeByte(v)
-        table.insert(self.content, string.char(v))
+        table.insert(self.content, strchar(v))
     end
 
     function LuaB2OutputStream:writeString(v)
@@ -219,7 +230,7 @@
             return os;
         end
 
-        local len = string.len(v);
+        local len = strlen(v);
         local t = StringB2TypeList[len + 1]
         if t then
             BioOutputStream.WriteByte(os, t);

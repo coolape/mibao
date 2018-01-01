@@ -5,6 +5,39 @@ do
     NetProto.__sessionID = 0; -- 会话ID
     NetProto.dispatch = {}
     --==============================
+    -- 其它的table
+    NetProto._toMap = function(stName, m)
+        local ret = {}
+        for k,v in pairs(m) do
+            ret[k] = NetProto[stName].toMap(v)
+        end
+        return ret
+    end
+    -- 其它的table
+    NetProto._toList = function(stName, m)
+        local ret = {}
+        for i,v in ipairs(m) do
+            table.insert(ret, NetProto[stName].toMap(v))
+        end
+        return ret
+    end
+    -- 其它的table
+    NetProto._parseMap = function(stName, m)
+        local ret = {}
+        for k,v in pairs(m) do
+            ret[k] = NetProto[stName].parse(v)
+        end
+        return ret
+    end
+    -- 其它的table
+    NetProto._parseList = function(stName, m)
+        local ret = {}
+        for i,v in ipairs(m) do
+            table.insert(ret, NetProto[stName].parse(v))
+        end
+        return ret
+    end
+    -- 返回信息
     NetProto.ST_retInfor = {
         toMap = function(m)
             local r = {}
@@ -19,6 +52,7 @@ do
             return r;
         end,
     }
+    -- 城池
     NetProto.ST_city = {
         toMap = function(m)
             local r = {}
@@ -33,25 +67,28 @@ do
             return r;
         end,
     }
+    -- 用户信息
     NetProto.ST_userInfor = {
         toMap = function(m)
             local r = {}
             r[14] = m.lev  -- 等级 int
             r[13] = m.name  -- 名字 string
+            r[24] = NetProto._toList(NetProto.ST_city, m.cityList)  -- 城池列表
             r[12] = m.id  --   string
-            r[15] = NetProto.ST_city.toMap(m.city) -- 他的城
-            r[16] = m.isNew  --  boolean
             r[17] = m.ver  -- 版本 int
+            r[16] = m.isNew  --  boolean
+            r[25] = NetProto.ST_city.toMap(m.currCity) -- 当前城
             return r;
         end,
         parse = function(m)
             local r = {}
             r.lev = m[14] --  int
             r.name = m[13] --  string
+            r.cityList = NetProto._parseList(NetProto.ST_city, m.cityList)  -- 城池列表
             r.id = m[12] --  string
-            r.city = NetProto.ST_city.parse(m[15]) --  table
-            r.isNew = m[16] --  boolean
             r.ver = m[17] --  int
+            r.isNew = m[16] --  boolean
+            r.currCity = NetProto.ST_city.parse(m[25]) --  table
             return r;
         end,
     }

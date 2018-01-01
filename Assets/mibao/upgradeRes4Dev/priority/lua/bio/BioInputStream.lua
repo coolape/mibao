@@ -9,6 +9,12 @@
     local MapB2TypeSizeMap = BioType.MapB2TypeSizeMap
     local ListB2TypeSizeMap = BioType.ListB2TypeSizeMap
 
+
+    local type = type
+    local sub = string.sub
+    local strbyte = string.byte
+    local strchar = string.char
+
     --===================================================
     --===================================================
     --===================================================
@@ -25,19 +31,19 @@
     end
 
     function LuaB2InputStream:readByte()
-        local ret = string.byte(self.bytes, self.pos);
+        local ret = strbyte(self.bytes, self.pos);
         self.pos = self.pos + 1;
         return ret;
     end
 
     function LuaB2InputStream:readBytes(len)
-        local ret = string.byte(self.bytes, self.pos, self.pos + len - 1);
+        local ret = strbyte(self.bytes, self.pos, self.pos + len - 1);
         self.pos = self.pos + len;
         return ret;
     end
 
     function LuaB2InputStream:readString(len)
-        local ret = string.sub(self.bytes, self.pos, self.pos + len - 1);
+        local ret = sub(self.bytes, self.pos, self.pos + len - 1);
         self.pos = self.pos + len;
         return ret;
     end
@@ -221,7 +227,7 @@
             return BioInputStream.readInt(s);
         else
             --//throw new IOException("unknow tag error then" + tag);
-            printe("bio2 unknon type then==" .. tostring(tag));
+            print("bio2 unknon type then==" .. tostring(tag));
         end
         return 0;
     end
