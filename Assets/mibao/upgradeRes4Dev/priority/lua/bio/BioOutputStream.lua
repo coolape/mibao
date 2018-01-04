@@ -18,6 +18,38 @@
     local strchar = string.char
     local floorInt = math.floor
     --===================================================
+    --===================================================
+    -- 数据流
+    LuaB2OutputStream = class("LuaB2OutputStream");
+    function LuaB2OutputStream:ctor(v)
+        self.content = {}
+    end
+
+    function LuaB2OutputStream:init(v)
+    end
+
+    function LuaB2OutputStream:writeByte(v)
+        table.insert(self.content, strchar(v))
+    end
+
+    function LuaB2OutputStream:writeString(v)
+        table.insert(self.content, v)
+    end
+
+    function LuaB2OutputStream:toBytes()
+        --local ret = "";
+        --for i, v in ipairs(self.content) do
+        --    ret = ret .. v;
+        --end
+        return table.concat(self.content, "");
+    end
+
+    function LuaB2OutputStream:release()
+        self.content = {};
+    end
+    --===================================================
+    --===================================================
+    --===================================================
 
     -- 原始数据类型
     BioOutputStream.DataType = {
@@ -87,38 +119,6 @@
         return ret, i
     end
 
-    --===================================================
-    --===================================================
-    -- 数据流
-    LuaB2OutputStream = class("LuaB2OutputStream");
-    function LuaB2OutputStream:ctor(v)
-        self.content = {}
-    end
-
-    function LuaB2OutputStream:init(v)
-    end
-
-    function LuaB2OutputStream:writeByte(v)
-        table.insert(self.content, strchar(v))
-    end
-
-    function LuaB2OutputStream:writeString(v)
-        table.insert(self.content, v)
-    end
-
-    function LuaB2OutputStream:toBytes()
-        local ret = "";
-        for i, v in ipairs(self.content) do
-            ret = ret .. v;
-        end
-        return ret;
-    end
-
-    function LuaB2OutputStream:release()
-        self.content = {};
-    end
-    --===================================================
-    --===================================================
     --===================================================
     ---public Void writeObject (LuaB2OutputStream os, obj)
     ---@param optional LuaB2OutputStream os
