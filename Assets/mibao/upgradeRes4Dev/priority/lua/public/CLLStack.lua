@@ -5,6 +5,7 @@
 require("public.class")
 CLLStack = class("CLLStack")
 
+local remove = table.remove
 function CLLStack:ctor()
     self.stack_table = {}
 end
@@ -17,16 +18,16 @@ end
 function CLLStack:pop()
     local size = self:size()
     if self:isEmpty() then
-        printError("Error: CLLStack is empty!")
+        print("Error: CLLStack is empty!")
         return
     end
-    return table.remove(self.stack_table,size)
+    return remove(self.stack_table,size)
 end
 
 function CLLStack:top()
     local size = self:size()
     if self:isEmpty() then
-        printError("Error: CLLStack is empty!")
+        print("Error: CLLStack is empty!")
         return
     end
     return self.stack_table[size]
@@ -41,7 +42,7 @@ function CLLStack:isEmpty()
 end
 
 function CLLStack:size()
-    return table.nums(self.stack_table) or 0
+    return #(self.stack_table) or 0
 end
 
 function CLLStack:clear()
@@ -54,7 +55,7 @@ function CLLStack:printElement()
     local size = self:size()
 
     if self:isEmpty() then
-        printError("Error: CLLStack is empty!")
+        print("Error: CLLStack is empty!")
         return
     end
 
