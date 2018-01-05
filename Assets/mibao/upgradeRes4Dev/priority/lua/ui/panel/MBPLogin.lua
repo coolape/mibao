@@ -67,7 +67,11 @@ do
     function MBPLogin.procNetwork (cmd, succ, msg, data)
         if cmd == "connectCallback" then
             print("send")
-            Net.self:send(NetProto.send.login("123", "大"));
+            local userName = "";
+            for i=1, 2048 do
+                userName = userName .. "i"
+            end
+            Net.self:send(NetProto.send.login(userName, "22"));
         elseif  cmd == "login" then
             print("login")
             --print(data)

@@ -62,7 +62,7 @@
     local result = BioInputStream.readObject(is)
     --]]
     function BioInputStream.readObject (s)
-        local tag = BioInputStream.ReadByte(s);
+        local tag = BioInputStream.ReadByteTag(s);
         if tag == B2Type.NULL then
             return nil;
         else
@@ -236,8 +236,22 @@
         if s == nil then
             return nil;
         end
-        local ret = s:readByte()
-        return ret;
+        return s:readByte();
+    end
+
+    function BioInputStream.ReadByteTag(s)
+        if s == nil then
+            return nil;
+        end
+        local int0 = s:readByte()
+        local int = 0;
+        if int0 >= 128 then
+            --字节是负数,里面存放的1字节是负数的补码,比如读出来是128， 128=1000 0000，对应signed char 是 -127，而127=0111 1111
+            int = int0 - 256;
+        else
+            int = int0;
+        end
+        return int;
     end
 
     function BioInputStream.ReadBytes(s, len)
@@ -259,7 +273,7 @@
     end
 
     function BioInputStream.readString(s)
-        local tag = BioInputStream.ReadByte(s);
+        local tag = BioInputStream.ReadByteTag(s);
         local strLen = StringB2TypeLenMap[tag]
         if strLen then
             return s:readString(strLen)
@@ -271,7 +285,7 @@
     end
 
     function BioInputStream.readInt(s)
-        local tag = BioInputStream.ReadByte(s);
+        local tag = BioInputStream.ReadByteTag(s);
         local intVal = IntB2TypeValueMap[tag]
         if intVal then
             return intVal;

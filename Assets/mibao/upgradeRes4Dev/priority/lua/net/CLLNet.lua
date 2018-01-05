@@ -3,6 +3,13 @@ do
     require("bio.BioUtl")
     require("net.NetProtoClient")
     CLLNet = {}
+
+    local strLen = string.len;
+    local strSub = string.sub;
+    local strPack = string.pack
+    local maxPackSize = 1 * 1024 - 1;
+    local subPackSize = 1 * 1024 - 1 - 50;
+
     local csSelf;
     local __maxLen = 1024 * 1024;
 
@@ -11,12 +18,90 @@ do
     end
 
     -- 组包
-    function CLLNet.packMsg(data)
+    function CLLNet.packMsg(data, tcp)
         local bytes = BioUtl.writeObject(data)
-        if bytes then
-            bytes =  string.pack(">s2", bytes);
+        if bytes == nil or tcp == nil or tcp.socket == nil then
+            return nil;
         end
-        return bytes
+        local len = strLen(bytes)
+        if len > maxPackSize then
+            -- 处理分包
+            local packList = ArrayList()
+            local subPackgeCount = math.floor(len / subPackSize)
+            local left = len % subPackSize
+            local count = 0;
+            if left > 0 then
+                count = subPackgeCount + 1
+            end
+            for i = 1, subPackgeCount do
+                local subPackg = {}
+                table.insert(subPackg, count);
+                table.insert(subPackg, i);
+                table.insert(subPackg, strSub(bytes, ((i - 1) * subPackSize) + 1, i * subPackSize));
+                local package = strPack(">s2", BioUtl.writeObject(subPackg))
+                tcp.socket:SendAsync(package);
+            end
+            if left > 0 then
+                local subPackg = {}
+                table.insert(subPackg, count);
+                table.insert(subPackg, count);
+                table.insert(subPackg, strSub(bytes, len - left + 1, len));
+                local package = strPack(">s2", BioUtl.writeObject(subPackg))
+                tcp.socket:SendAsync(package);
+            end
+        else
+            local package = strPack(">s2", bytes)
+            tcp.socket:SendAsync(package);
+        end
+    end
+
+
+    local function isArray(t)
+        if t == nil then
+            return false;
+        end
+        local ret = true;
+        if type(t) == "table" then
+            local i = 0
+            for _ in pairs(t) do
+                i = i + 1
+                if t[i] == nil then
+                    return false
+                end
+            end
+        else
+            ret = false;
+        end
+        return ret;
+    end
+
+    -- 完整的接口都是table，当有分包的时候会收到list。list[1]=共有几个分包，list[2]＝第几个分包，list[3]＝ 内容
+    local function isSubPackage(m)
+        if m[0] then
+            --判断有没有cmd
+            return false
+        end
+        if isArray(m) then
+            return true;
+        end
+        return false
+    end
+
+
+    local currPack = {};
+    local function unPackSubMsg(m)
+        -- 是分包
+        local len = m[1]
+        local index = m[2]
+        table.insert(currPack, index, m[3])
+        if (#currPack == len) then
+            -- 说明分包已经取完整
+            local map = BioUtl.readObject(table.concat(currPack, ""))
+            currPack = nil;
+            currPack = {}
+            return map;
+        end
+        return nil;
     end
 
     -- 解包
@@ -38,7 +123,12 @@ do
             --说明长度不够
             buffer.Position = oldPos;
         end
-        return ret;
+
+        if ret and isSubPackage(ret) then
+            return unPackSubMsg(ret)
+        else
+            return ret;
+        end
     end
 
     function CLLNet.dispatchSend(map)

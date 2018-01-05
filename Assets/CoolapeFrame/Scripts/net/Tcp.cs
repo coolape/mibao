@@ -18,7 +18,7 @@ using XLua;
 namespace Coolape
 {
 	public delegate void TcpDispatchCallback (object obj, Tcp tcp);
-	public delegate byte[] TcpPackMessageFunc (object obj);
+	public delegate byte[] TcpPackMessageAndSendFunc (object obj, Tcp tcp);
 	public class Tcp
 	{
 		public string host;
@@ -36,7 +36,7 @@ namespace Coolape
 		public const string CONST_OutofNetConnect = "outofNetConnect";
 		TcpDispatchCallback mDispatcher;
 		//消息组包函数，需要返回bytes
-		public object msgPackFunc;
+		public object msgPackAndSendFunc;
 		//消息解包函数，第一个入参数是socket，第二个入参在是MemoryStream, 返回解包后得到的对象
 		public object msgUnpackFunc;
 
@@ -49,10 +49,10 @@ namespace Coolape
 			mDispatcher = dispatcher;
 		}
 
-		public Tcp (TcpDispatchCallback dispatcher, object msgPackFunc, object msgUnpackFunc)
+		public Tcp (TcpDispatchCallback dispatcher, object msgPackAndSendFunc, object msgUnpackFunc)
 		{
 			mDispatcher = dispatcher;
-			this.msgPackFunc = msgPackFunc;
+			this.msgPackAndSendFunc = msgPackAndSendFunc;
 			this.msgUnpackFunc = msgUnpackFunc;
 		}
 
@@ -62,18 +62,18 @@ namespace Coolape
 			this.port = port;
 		}
 
-		public void init (string host, int port, object msgPackFunc, object msgUnpackFunc)
+		public void init (string host, int port, object msgPackAndSendFunc, object msgUnpackFunc)
 		{
 			this.host = host;
 			this.port = port;
-			this.msgPackFunc = msgPackFunc;
+			this.msgPackAndSendFunc = msgPackAndSendFunc;
 			this.msgUnpackFunc = msgUnpackFunc;
 		}
 
-		public void init (string host, int port, TcpDispatchCallback dispatcher, object msgPackFunc, object msgUnpackFunc)
+		public void init (string host, int port, TcpDispatchCallback dispatcher, object msgPackAndSendFunc, object msgUnpackFunc)
 		{
 			mDispatcher = dispatcher;
-			this.msgPackFunc = msgPackFunc;
+			this.msgPackAndSendFunc = msgPackAndSendFunc;
 			this.msgUnpackFunc = msgUnpackFunc;
 			this.host = host;
 			this.port = port;
@@ -166,35 +166,24 @@ namespace Coolape
 				Debug.LogWarning ("Socket is null");
 				return;
 			}
-			byte[] bytes = packMessage (obj);
-			socket.SendAsync (bytes);
+			object ret = packMessage (obj);
+
+			if (ret == null) {
+				return;
+			}
+			socket.SendAsync (ret as byte[]);
 		}
 
-		public byte[] packMessage (object obj)
+		public object packMessage (object obj)
 		{
 			try {
-				if (msgPackFunc != null) {
-					if (msgPackFunc is TcpPackMessageFunc) {
-						return ((TcpPackMessageFunc)msgPackFunc) (obj);
+				if (msgPackAndSendFunc != null) {
+					if (msgPackAndSendFunc is TcpPackMessageAndSendFunc) {
+						((TcpPackMessageAndSendFunc)msgPackAndSendFunc) (obj, this);
 					} else {
-						object[] objs = Utl.doCallback (msgPackFunc, obj);
-						if (objs != null && objs.Length > 0) {
-							object o = objs [0]; 
-							if (o == null) {
-								return null;
-							} else {
-								if (o is string) {
-									return System.Text.Encoding.UTF8.GetBytes (o as string);
-								} else if (o is byte[]) {
-									return o as byte[];
-								} else {
-									return null;
-								}
-							}
-						} else {
-							return null;
-						}
+						Utl.doCallback (msgPackAndSendFunc, obj, this);
 					}
+					return null;
 				} else {
 					return defaultPackMessage (obj);
 				}
