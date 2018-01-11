@@ -79,14 +79,14 @@ do
     logout = function()
         local ret = {}
         ret[0] = 16
-        ret[-1] = NetProto.__sessionID
+        ret[1] = NetProto.__sessionID
         return ret
     end,
     -- 登陆
     login = function(userId, password)
         local ret = {}
         ret[0] = 17
-        ret[-1] = NetProto.__sessionID
+        ret[1] = NetProto.__sessionID
         ret[18] = userId; -- 用户名
         ret[19] = password; -- 密码
         return ret
@@ -95,7 +95,7 @@ do
     syndata = function(ver, data)
         local ret = {}
         ret[0] = 22
-        ret[-1] = NetProto.__sessionID
+        ret[1] = NetProto.__sessionID
         ret[13] = ver; -- 版本号
         ret[23] = data; -- 数据信息
         return ret
@@ -106,13 +106,13 @@ do
     logout = function(map)
         local ret = {}
         ret.cmd = "logout"
-        ret.retInfor = NetProto.ST_retInfor.parse(map[1]) -- 返回信息
+        ret.retInfor = NetProto.ST_retInfor.parse(map[2]) -- 返回信息
         return ret
     end,
     login = function(map)
         local ret = {}
         ret.cmd = "login"
-        ret.retInfor = NetProto.ST_retInfor.parse(map[1]) -- 返回信息
+        ret.retInfor = NetProto.ST_retInfor.parse(map[2]) -- 返回信息
         ret.userInfor = NetProto.ST_userInfor.parse(map[20]) -- 用户信息
         ret.sysTime = map[21]-- 系统时间
         return ret
@@ -120,7 +120,7 @@ do
     syndata = function(map)
         local ret = {}
         ret.cmd = "syndata"
-        ret.retInfor = NetProto.ST_retInfor.parse(map[1]) -- 返回信息
+        ret.retInfor = NetProto.ST_retInfor.parse(map[2]) -- 返回信息
         ret.newVer = map[24]-- 新版本号
         ret.newData = map[25]-- 新数据
         return ret
