@@ -65,28 +65,16 @@ do
 
     -- 网络请求的回调；cmd：指命，succ：成功失败，msg：消息；paras：服务器下行数据
     function MBPLogin.procNetwork (cmd, succ, msg, data)
-        if cmd == "connectCallback" then
-            print("send")
-            local userName = "";
-            for i=1, 2048 do
-                userName = userName .. "i"
+        if succ == 1 then
+            if cmd == "connectCallback" then
+                print("send")
+                Net.self:send(NetProto.send.login("chenbin", "123."));
+            elseif  cmd == "login" then
+                print("login")
             end
-            Net.self:send(NetProto.send.login(userName, "22"));
-        elseif  cmd == "login" then
-            print("login")
-            --print(data)
-            print(BioUtl.bio2int(data.userInfor.ver))
-            --for k,v in pairs(data.userInfor) do
-            --    print(k,v)
-            --end
+        else
+            print(cmd, succ, msg)
         end
-        --[[
-        if(succ == 1) then
-          if(cmd == "xxx") then
-            -- TODO:
-          end
-        end
-        --]]
     end
 
     -- 处理ui上的事件，例如点击等

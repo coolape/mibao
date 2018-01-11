@@ -8,6 +8,7 @@ do
     -- public toMap
     NetProto._toMap = function(stName, m)
         local ret = {}
+        if m == nil then return ret end
         for k,v in pairs(m) do
             ret[k] = NetProto[stName].toMap(v)
         end
@@ -16,6 +17,7 @@ do
     -- public toList
     NetProto._toList = function(stName, m)
         local ret = {}
+        if m == nil then return ret end
         for i,v in ipairs(m) do
             table.insert(ret, NetProto[stName].toMap(v))
         end
@@ -24,6 +26,7 @@ do
     -- public parse
     NetProto._parseMap = function(stName, m)
         local ret = {}
+        if m == nil then return ret end
         for k,v in pairs(m) do
             ret[k] = NetProto[stName].parse(v)
         end
@@ -32,6 +35,7 @@ do
     -- public parse
     NetProto._parseList = function(stName, m)
         local ret = {}
+        if m == nil then return ret end
         for i,v in ipairs(m) do
             table.insert(ret, NetProto[stName].parse(v))
         end
@@ -43,12 +47,14 @@ do
     NetProto.ST_retInfor = {
         toMap = function(m)
             local r = {}
+            if m == nil then return r end
             r[10] = m.msg  -- 返回消息 string
             r[11] = m.code  -- 返回值 int
             return r;
         end,
         parse = function(m)
             local r = {}
+            if m == nil then return r end
             r.msg = m[10] --  string
             r.code = m[11] --  int
             return r;
@@ -58,6 +64,7 @@ do
     NetProto.ST_userInfor = {
         toMap = function(m)
             local r = {}
+            if m == nil then return r end
             r[12] = m.id  --   string
             r[13] = m.ver  -- 服务数据版本号 int
             r[14] = m.name  -- 名字 string
@@ -66,6 +73,7 @@ do
         end,
         parse = function(m)
             local r = {}
+            if m == nil then return r end
             r.id = m[12] --  string
             r.ver = m[13] --  int
             r.name = m[14] --  string
