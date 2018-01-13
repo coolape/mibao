@@ -83,6 +83,15 @@ do
     }
     --==============================
     NetProto.send = {
+    -- 数据同步
+    syndata = function(ver, data)
+        local ret = {}
+        ret[0] = 22
+        ret[1] = NetProto.__sessionID
+        ret[13] = ver; -- 版本号
+        ret[23] = data; -- 数据信息
+        return ret
+    end,
     -- 退出
     logout = function()
         local ret = {}
@@ -99,18 +108,27 @@ do
         ret[19] = password; -- 密码
         return ret
     end,
-    -- 数据同步
-    syndata = function(ver, data)
+    -- 注册
+    regist = function(userId, password, machInfor)
         local ret = {}
-        ret[0] = 22
+        ret[0] = 26
         ret[1] = NetProto.__sessionID
-        ret[13] = ver; -- 版本号
-        ret[23] = data; -- 数据信息
+        ret[18] = userId; -- 用户名
+        ret[19] = password; -- 密码
+        ret[27] = machInfor; -- 机器信息
         return ret
     end,
     }
     --==============================
     NetProto.recive = {
+    syndata = function(map)
+        local ret = {}
+        ret.cmd = "syndata"
+        ret.retInfor = NetProto.ST_retInfor.parse(map[2]) -- 返回信息
+        ret.newVer = map[24]-- 新版本号
+        ret.newData = map[25]-- 新数据
+        return ret
+    end,
     logout = function(map)
         local ret = {}
         ret.cmd = "logout"
@@ -125,18 +143,19 @@ do
         ret.sysTime = map[21]-- 系统时间
         return ret
     end,
-    syndata = function(map)
+    regist = function(map)
         local ret = {}
-        ret.cmd = "syndata"
+        ret.cmd = "regist"
         ret.retInfor = NetProto.ST_retInfor.parse(map[2]) -- 返回信息
-        ret.newVer = map[24]-- 新版本号
-        ret.newData = map[25]-- 新数据
+        ret.userInfor = NetProto.ST_userInfor.parse(map[20]) -- 用户信息
+        ret.sysTime = map[21]-- 系统时间
         return ret
     end,
     }
     --==============================
+    NetProto.dispatch[22]={onReceive = NetProto.recive.syndata, send = NetProto.send.syndata}
     NetProto.dispatch[16]={onReceive = NetProto.recive.logout, send = NetProto.send.logout}
     NetProto.dispatch[17]={onReceive = NetProto.recive.login, send = NetProto.send.login}
-    NetProto.dispatch[22]={onReceive = NetProto.recive.syndata, send = NetProto.send.syndata}
+    NetProto.dispatch[26]={onReceive = NetProto.recive.regist, send = NetProto.send.regist}
     return NetProto
 end
