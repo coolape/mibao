@@ -65,19 +65,19 @@ do
         toMap = function(m)
             local r = {}
             if m == nil then return r end
-            r[12] = m.id  --   string
-            r[13] = m.ver  -- 服务数据版本号 int
-            r[14] = m.name  -- 名字 string
             r[15] = m.lev  -- 等级 int
+            r[28] = m.uid  --   string
+            r[14] = m.name  -- 名字 string
+            r[13] = m.ver  -- 服务数据版本号 int
             return r;
         end,
         parse = function(m)
             local r = {}
             if m == nil then return r end
-            r.id = m[12] --  string
-            r.ver = m[13] --  int
-            r.name = m[14] --  string
             r.lev = m[15] --  int
+            r.uid = m[28] --  string
+            r.name = m[14] --  string
+            r.ver = m[13] --  int
             return r;
         end,
     }
@@ -141,6 +141,7 @@ do
         ret.retInfor = NetProto.ST_retInfor.parse(map[2]) -- 返回信息
         ret.userInfor = NetProto.ST_userInfor.parse(map[20]) -- 用户信息
         ret.sysTime = map[21]-- 系统时间
+        ret.session = map[29]-- 会话id
         return ret
     end,
     regist = function(map)
@@ -149,6 +150,7 @@ do
         ret.retInfor = NetProto.ST_retInfor.parse(map[2]) -- 返回信息
         ret.userInfor = NetProto.ST_userInfor.parse(map[20]) -- 用户信息
         ret.sysTime = map[21]-- 系统时间
+        ret.session = map[29]-- 会话id
         return ret
     end,
     }
