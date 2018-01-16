@@ -2,6 +2,7 @@
 do
     require("bio.BioUtl")
     require("net.NetProtoClient")
+    require("net.UsermgrHttpProtoClient")
     CLLNet = {}
 
     local strLen = string.len;
@@ -9,12 +10,31 @@ do
     local strPack = string.pack
     local maxPackSize = 1 * 1024 - 1;
     local subPackSize = 1 * 1024 - 1 - 50;
-
     local csSelf;
     local __maxLen = 1024 * 1024;
 
     function CLLNet.init()
         csSelf = Net.self;
+    end
+
+    local baseUrl = "http://127.0.0.1:8081/mibao/"
+    function CLLNet.httpPost(method, data)
+        local url = baseUrl .. method
+        WWWEx.newWWW(CLMainBase.self, url,
+        data,
+        CLAssetType.bytes,
+        5, 10, CLLNet.onResponsed,
+        CLLNet.httpError,
+        CLLNet.httpError, nil);
+    end
+
+    function CLLNet.onResponsed(content, orgs)
+        local map = BioUtl.readObject(content)
+        CLLNet.dispatchHttp(map)
+    end
+
+    function CLLNet.httpError(content, orgs)
+        --CLLNet.dispatchHttp(map)
     end
 
     -- 组包
@@ -131,23 +151,15 @@ do
         end
     end
 
-    function CLLNet.dispatchSend(map)
-        CLLDataProc.procData(map);
-    end
-
-    function CLLNet.dispatchGate(map)
+    function CLLNet.dispatchHttp(map)
         if (map == nil) then
             return
         end
 
-        if type(map) == "string" then
-            if map == "connectCallback" then
-                CLPanelManager.topPanel:procNetwork("connectCallback", 1, "connectCallback", nil);
-            elseif map == "outofNetConnect" then
-                CLPanelManager.topPanel:procNetwork("outofNetConnect", -9999, "outofNetConnect", nil);
-            end
-        else
-            PorotocolService.onCallNet.disp(map);
+        local dispatchInfor = UsermgrHttpProto.dispatch[map[0]]
+        if dispatchInfor then
+            local data = dispatchInfor.onReceive(map);
+            CLLNet.dispatch(data)
         end
     end
 
