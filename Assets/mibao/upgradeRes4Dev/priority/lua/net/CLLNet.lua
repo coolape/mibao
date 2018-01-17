@@ -17,15 +17,19 @@ do
         csSelf = Net.self;
     end
 
-    local baseUrl = "http://127.0.0.1:8081/mibao/"
+    local baseUrl = "http://127.0.0.1:8801/usermgr/"
     function CLLNet.httpPost(method, data)
         local url = baseUrl .. method
-        WWWEx.newWWW(CLMainBase.self, url,
-        data,
-        CLAssetType.bytes,
-        5, 10, CLLNet.onResponsed,
-        CLLNet.httpError,
-        CLLNet.httpError, nil);
+
+        local postData = Hashtable();
+        MapEx.set(postData, "data", BioUtl.writeObject(data))
+
+        WWWEx.newWWW(CLMainBase.self, Utl.urlAddTimes(url),
+                postData,
+                CLAssetType.bytes,
+                5, 10, CLLNet.onResponsed,
+                CLLNet.httpError,
+                CLLNet.httpError, nil);
     end
 
     function CLLNet.onResponsed(content, orgs)
@@ -75,7 +79,6 @@ do
         end
     end
 
-
     local function isArray(t)
         if t == nil then
             return false;
@@ -106,7 +109,6 @@ do
         end
         return false
     end
-
 
     local currPack = {};
     local function unPackSubMsg(m)
@@ -192,7 +194,8 @@ do
         if (succ ~= 1) then
             retInfor.msg = Localization.Get("Error_" .. succ);
             CLAlert.add(msg, Color.red, 1);
-        else -- success
+        else
+            -- success
             CLLNet.cacheData(cmd, map);
         end
 

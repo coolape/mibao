@@ -33,10 +33,11 @@ do
         -- 取得数据配置
         require("cfg.DBCfg");
         require("db.MBDBPassword");
+        require("net.UsermgrHttpProtoClient")
         -- 网络
         Net.self:setLua();
         CLLNet.init();
-        --CallNet = PorotocolService.callNet
+        CallHttp = UsermgrHttpProto.send
 
         --KKPushMsg.init(uidx);
         --MyCfg.self.worldMap:setLua();
@@ -239,6 +240,7 @@ do
                 --p:setData({ mode = GameMode.city });
                 CLPanelManager.showTopPanel(p);
 
+                getPanelAsy("PanelLogin", onLoadedPanelTT);
                 local p2 = CLPanelManager.getPanel("PanelSplash");
                 if (p2 ~= nil) then
                     CLPanelManager.hidePanel(p2);

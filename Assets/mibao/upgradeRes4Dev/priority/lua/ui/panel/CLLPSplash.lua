@@ -321,7 +321,8 @@ do
             CLLPSplash.prepareStartGame();
         else
             --SetActive(ButtonEntry, true)
-            CLLPSplash.accountLogin();
+            --CLLPSplash.accountLogin();
+            CLLPSplash.checkHotUpgrade();
         end
     end
 

@@ -35,8 +35,13 @@ do
 
     -- 设置数据
     function MBPLogin.setData(paras)
-        onLoginCallback = paras[1]
-        onLoginCallbackParam = paras[2]
+        if paras then
+            onLoginCallback = paras[1]
+            onLoginCallbackParam = paras[2]
+        else
+            onLoginCallback = nil
+            onLoginCallbackParam = nil
+        end
     end
 
     -- 显示，在c#中。show为调用refresh，show和refresh的区别在于，当页面已经显示了的情况，当页面再次出现在最上层时，只会调用refresh
@@ -89,7 +94,8 @@ do
             end
 
             showHotWheel();
-            MBPLogin.accountLogin(user, psd)
+            --MBPLogin.accountLogin(user, psd)
+            CLLNet.httpPost("login", UsermgrHttpProto.send.login(user, psd))
         elseif goName == "ButtonRegist" then
             local user = trim(InputUser4Regist.value);
             local psd = trim(InputPassword4Regist.value);
@@ -110,7 +116,14 @@ do
             end
 
             showHotWheel();
-            MBPLogin.accountLogin(user, psd)
+            --MBPLogin.accountLogin(user, psd)
+            local deviceInfor = {}
+            table.insert(deviceInfor, SystemInfo.deviceName)
+            table.insert(deviceInfor, SystemInfo.deviceModel)
+            table.insert(deviceInfor, SystemInfo.deviceType:ToString())
+            table.insert(deviceInfor, SystemInfo.operatingSystem)
+            table.insert(deviceInfor, SystemInfo.maxTextureSize)
+            CLLNet.httpPost("regist", CallHttp.regist(user, psd, CLCfgBase.self.appUniqueID, "0", Utl.uuid, table.concat(deviceInfor, ";")))
         end
     end
 
