@@ -66,6 +66,14 @@ do
 
     -- 网络请求的回调；cmd：指命，succ：成功失败，msg：消息；paras：服务器下行数据
     function MBPLogin.procNetwork (cmd, succ, msg, data)
+        hideHotWheel()
+        if succ == 1 then
+            if cmd == "login" then
+
+            end
+        else
+            print(msg)
+        end
     end
 
     -- 处理ui上的事件，例如点击等
@@ -123,7 +131,7 @@ do
             table.insert(deviceInfor, SystemInfo.deviceType:ToString())
             table.insert(deviceInfor, SystemInfo.operatingSystem)
             table.insert(deviceInfor, SystemInfo.maxTextureSize)
-            CLLNet.httpPost("regist", CallHttp.regist(user, psd, CLCfgBase.self.appUniqueID, "0", Utl.uuid, table.concat(deviceInfor, ";")))
+            CLLNet.httpPost("regist", CallHttp.regist(user, psd, CLCfgBase.self.appUniqueID, "0", Utl.uuid, table.concat(deviceInfor, ",")))
         end
     end
 

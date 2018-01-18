@@ -45,6 +45,7 @@ do
     SkinnedMeshRenderer = CS.UnityEngine.SkinnedMeshRenderer;
     Renderer = CS.UnityEngine.Renderer;
     WWW = CS.UnityEngine.WWW;
+    WWWForm = CS.UnityEngine.WWWForm;
     Screen = CS.UnityEngine.Screen;
     Hashtable = CS.System.Collections.Hashtable;
     ArrayList = CS.System.Collections.ArrayList;

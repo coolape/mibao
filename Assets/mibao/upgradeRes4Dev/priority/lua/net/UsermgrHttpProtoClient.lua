@@ -1,7 +1,7 @@
 do
+    UsermgrHttpProto = {}
     require("bio.BioUtl")
 
-    UsermgrHttpProto = {}
     UsermgrHttpProto.__sessionID = 0; -- 会话ID
     UsermgrHttpProto.dispatch = {}
     --==============================
@@ -81,16 +81,16 @@ do
             local r = {}
             if m == nil then return r end
             r[13] = m.idx  -- id int
-            r[14] = m.name  -- 名称 string
             r[15] = m.status  -- 状态 0:正常; 1:爆满; 2:维护 int
+            r[14] = m.name  -- 名称 string
             return r;
         end,
         parse = function(m)
             local r = {}
             if m == nil then return r end
             r.idx = m[13] --  int
-            r.name = m[14] --  string
             r.status = m[15] --  int
+            r.name = m[14] --  string
             return r;
         end,
     }

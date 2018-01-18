@@ -21,8 +21,9 @@ do
     function CLLNet.httpPost(method, data)
         local url = baseUrl .. method
 
-        local postData = Hashtable();
-        MapEx.set(postData, "data", BioUtl.writeObject(data))
+        print("len====" .. string.len(BioUtl.writeObject(data)))
+        local postData = WWWForm()
+        postData:AddBinaryData("data", BioUtl.writeObject(data))
 
         WWWEx.newWWW(CLMainBase.self, Utl.urlAddTimes(url),
                 postData,
