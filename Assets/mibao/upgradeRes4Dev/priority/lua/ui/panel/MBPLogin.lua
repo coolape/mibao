@@ -68,11 +68,33 @@ do
     function MBPLogin.procNetwork (cmd, succ, msg, data)
         hideHotWheel()
         if succ == 1 then
-            if cmd == "login" then
+            if cmd == "login" or cmd == "regist" then
+                local user = data.userInfor
 
+                local uid = user.idx
+                if not isNilOrEmpty(uid) then
+                    hideTopPanel();
+                    if not isNilOrEmpty(InputUser4Login.value) then
+                        Prefs.setUserName(InputUser4Login.value)
+                    end
+
+                    if not isNilOrEmpty(InputPassword4Login.value) then
+                        Prefs.setUserPsd(InputPassword4Login.value)
+                    end
+
+                    uid = joinStr("mb_", uid);
+                    __uid__ = uid;
+                    Utl.doCallback(onLoginCallback, uid, onLoginCallbackParam);
+                end
             end
         else
-            print(msg)
+            if succ == 4 then
+                CLAlert.add("密码错误！", Color.red, 1);
+            elseif succ == 5 then
+                CLAlert.add("同一设备已经超过注册上限！", Color.red, 1);
+            else
+                CLAlert.add(LGet("UIMsg002"), Color.red, 1);
+            end
         end
     end
 
@@ -103,7 +125,7 @@ do
 
             showHotWheel();
             --MBPLogin.accountLogin(user, psd)
-            CLLNet.httpPost("login", UsermgrHttpProto.send.login(user, psd))
+            CLLNet.httpPost("login", UsermgrHttpProto.send.login(user, psd, CLCfgBase.self.appUniqueID))
         elseif goName == "ButtonRegist" then
             local user = trim(InputUser4Regist.value);
             local psd = trim(InputPassword4Regist.value);
@@ -132,85 +154,6 @@ do
             table.insert(deviceInfor, SystemInfo.operatingSystem)
             table.insert(deviceInfor, SystemInfo.maxTextureSize)
             CLLNet.httpPost("regist", CallHttp.regist(user, psd, CLCfgBase.self.appUniqueID, "0", Utl.uuid, table.concat(deviceInfor, ",")))
-        end
-    end
-
-
-    -- 取得系统账号
-    function MBPLogin.accountLogin(user, psd)
-        MBPLogin.onAccountLogin("{\"errorCode\":1,\"idx\":\"111\"}")
-        do return end
-
-        local url = PStr.b():a(__httpBaseUrl):a("/KokAccount/AccountServlet"):e();
-        local chnCfg = nil;
-        local chlCode = getChlCode();
-        local formData = Hashtable();
-        formData:Add("accountKey", "") -- 唯一String
-        formData:Add("machineid", Utl.uuid); -- 机器码
-        formData:Add("userName", user) -- 邮箱 （没有可以不填）	String
-        formData:Add("passWord", psd)--密码 （没有可以不填）	String
-        formData:Add("type", 2)--登录类型  1;//机器码登陆  2;//邮箱登陆  Int
-        formData:Add("channel", chlCode)--渠道号 	String
-        if KKWhiteList.isWhiteName() then
-            formData:Add("isMax", 0)--是否验证同一机子注册限制 0:不限制 1：限制最多5个
-        else
-            formData:Add("isMax", 1)--是否验证同一机子注册限制
-        end
-
-        local loginError = function(...)
-            hideHotWheel();
-            CLAlert.add(LGet("UIMsg001"), Color.red, 1);
-        end
-        WWWEx.newWWW(CLVerManager.self, Utl.urlAddTimes(url),
-        formData,
-        CLAssetType.text,
-        5, 10,
-        MBPLogin.onAccountLogin,
-        loginError,
-        loginError, nil);
-    end
-
-    function MBPLogin.onAccountLogin(content, orgs)
-        --[[
-        public static final int USERNOT = 0;//用户不存在
-		public static final int MAPERROR = -1;//参数错误
-		public static final int KEYERROR = -2;//机器唯一码为空
-		public static final int NAMEERROR = -3;//用户名登陆参数为空
-		public static final int PWDERROR = -4;//用户输入密码错误
-		public static final int LOGINTYPEERROR = -5;//登陆类型错误
-        --]]
-        hideHotWheel();
-        local d = JSON.DecodeMap(content);
-        local user = d;
-        local errorCode = MapEx.getInt(d, "errorCode");
-        if errorCode == 1 then
-            local uid = MapEx.getString(user, "idx");
-            if not isNilOrEmpty(uid) then
-                hideTopPanel();
-                if not isNilOrEmpty(InputUser4Login.value) then
-                    Prefs.setUserName(InputUser4Login.value)
-                end
-
-                if not isNilOrEmpty(InputPassword4Login.value) then
-                    Prefs.setUserPsd(InputPassword4Login.value)
-                end
-
-                uid = joinStr("mb_", uid);
-                __uid__ = uid;
-                Utl.doCallback(onLoginCallback, uid, onLoginCallbackParam);
-            else
-                printe(content)
-                -- 异常
-                CLAlert.add(LGet("UIMsg003"), Color.red, 1);
-            end
-        elseif errorCode == -4 then
-            printe(content)
-            CLAlert.add("密码错误！", Color.red, 1);
-        elseif errorCode == -6 then
-            CLAlert.add("同一设备已经超过注册上限！", Color.red, 1);
-        else
-            printe(content)
-            CLAlert.add(LGet("UIMsg002"), Color.red, 1);
         end
     end
 

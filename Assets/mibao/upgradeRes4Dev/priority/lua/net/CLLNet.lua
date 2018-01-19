@@ -20,12 +20,9 @@ do
     local baseUrl = "http://127.0.0.1:8801/usermgr/"
     function CLLNet.httpPost(method, data)
         local url = baseUrl .. method
+        local postData = BioUtl.writeObject(data)
 
-        print("len====" .. string.len(BioUtl.writeObject(data)))
-        local postData = WWWForm()
-        postData:AddBinaryData("data", BioUtl.writeObject(data))
-
-        WWWEx.newWWW(CLMainBase.self, Utl.urlAddTimes(url),
+        WWWEx.newWWWPostBytes(CLMainBase.self, Utl.urlAddTimes(url),
                 postData,
                 CLAssetType.bytes,
                 5, 10, CLLNet.onResponsed,
