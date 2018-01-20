@@ -31,8 +31,13 @@ do
     end
 
     function CLLNet.onResponsed(content, orgs)
-        local map = BioUtl.readObject(content)
-        CLLNet.dispatchHttp(map)
+        local map = nil
+        if content then
+            map = BioUtl.readObject(content)
+        end
+        if map then
+            CLLNet.dispatchHttp(map)
+        end
     end
 
     function CLLNet.httpError(content, orgs)

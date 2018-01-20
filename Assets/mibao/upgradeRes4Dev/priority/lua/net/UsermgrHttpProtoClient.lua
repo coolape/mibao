@@ -67,16 +67,18 @@ do
             local r = {}
             if m == nil then return r end
             r[13] = m.idx  -- id int
-            r[15] = m.status  -- 状态 0:正常; 1:爆满; 2:维护 int
+            r[34] = m.isnew  -- 新服 boolean
             r[14] = m.name  -- 名称 string
+            r[15] = m.status  -- 状态 0:正常; 1:爆满; 2:维护 int
             return r;
         end,
         parse = function(m)
             local r = {}
             if m == nil then return r end
             r.idx = m[13] --  int
-            r.status = m[15] --  int
+            r.isnew = m[34] --  boolean
             r.name = m[14] --  string
+            r.status = m[15] --  int
             return r;
         end,
     }
@@ -100,13 +102,14 @@ do
     --==============================
     UsermgrHttpProto.send = {
     -- 登陆
-    login = function(userId, password, appid)
+    login = function(userId, password, appid, channel)
         local ret = {}
         ret[0] = 20
         ret[1] = UsermgrHttpProto.__sessionID
         ret[21] = userId; -- 用户名
         ret[22] = password; -- 密码
         ret[17] = appid; -- 应用id
+        ret[25] = channel; -- 渠道号
         return ret
     end,
     -- 注册
@@ -117,7 +120,7 @@ do
         ret[21] = userId; -- 用户名
         ret[22] = password; -- 密码
         ret[17] = appid; -- 应用id
-        ret[25] = channel; -- 渠道
+        ret[25] = channel; -- 渠道号
         ret[26] = deviceID; -- 机器码
         ret[27] = deviceInfor; -- 机器信息
         return ret

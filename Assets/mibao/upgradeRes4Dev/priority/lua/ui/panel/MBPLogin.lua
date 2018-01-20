@@ -73,7 +73,9 @@ do
 
                 local uid = user.idx
                 if not isNilOrEmpty(uid) then
-                    hideTopPanel();
+                    --hideTopPanel();
+                    printe("=====")
+                    CLLNet.httpPost("getServerInfor", UsermgrHttpProto.send.getServerInfor(1))
                     if not isNilOrEmpty(InputUser4Login.value) then
                         Prefs.setUserName(InputUser4Login.value)
                     end
@@ -85,6 +87,11 @@ do
                     uid = joinStr("mb_", uid);
                     __uid__ = uid;
                     Utl.doCallback(onLoginCallback, uid, onLoginCallbackParam);
+                end
+            elseif cmd == "getServerInfor" then
+                local d = data.server
+                for k,v in pairs(d) do
+                    print(k,v)
                 end
             end
         else
