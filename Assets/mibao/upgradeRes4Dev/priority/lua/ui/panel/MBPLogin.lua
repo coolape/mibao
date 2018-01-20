@@ -73,9 +73,7 @@ do
 
                 local uid = user.idx
                 if not isNilOrEmpty(uid) then
-                    --hideTopPanel();
-                    printe("=====")
-                    CLLNet.httpPost("getServerInfor", UsermgrHttpProto.send.getServerInfor(1))
+                    hideTopPanel();
                     if not isNilOrEmpty(InputUser4Login.value) then
                         Prefs.setUserName(InputUser4Login.value)
                     end
@@ -84,7 +82,7 @@ do
                         Prefs.setUserPsd(InputPassword4Login.value)
                     end
 
-                    uid = joinStr("mb_", uid);
+                    uid = uid
                     __uid__ = uid;
                     Utl.doCallback(onLoginCallback, uid, onLoginCallbackParam);
                 end
