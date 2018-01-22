@@ -144,12 +144,12 @@ do
         return ret
     end,
     -- 取得服务器列表
-    getServers = function(appid, channceid)
+    getServers = function(appid, channel)
         local ret = {}
         ret[0] = 16
         ret[1] = UsermgrHttpProto.__sessionID
         ret[17] = appid; -- 应用id
-        ret[18] = channceid; -- 渠道号
+        ret[25] = channel; -- 渠道号
         return ret
     end,
     }

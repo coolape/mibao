@@ -17,12 +17,11 @@ do
         csSelf = Net.self;
     end
 
-    local baseUrl = "http://127.0.0.1:8801/usermgr/"
-    function CLLNet.httpPost(method, data)
-        local url = baseUrl .. method
+    local baseUrlUsermgr = "http://127.0.0.1:8801/usermgr/postbio"
+    function CLLNet.httpPostUsermgr( data)
         local postData = BioUtl.writeObject(data)
 
-        WWWEx.newWWWPostBytes(CLMainBase.self, Utl.urlAddTimes(url),
+        WWWEx.newWWWPostBytes(CLMainBase.self, Utl.urlAddTimes(baseUrlUsermgr),
                 postData,
                 CLAssetType.bytes,
                 5, 10, CLLNet.onResponsed,

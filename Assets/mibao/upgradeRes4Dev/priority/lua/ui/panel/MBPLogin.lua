@@ -130,7 +130,7 @@ do
 
             showHotWheel();
             --MBPLogin.accountLogin(user, psd)
-            CLLNet.httpPost("login", UsermgrHttpProto.send.login(user, psd, CLCfgBase.self.appUniqueID))
+            CLLNet.httpPostUsermgr(UsermgrHttpProto.send.login(user, psd, CLCfgBase.self.appUniqueID))
         elseif goName == "ButtonRegist" then
             local user = trim(InputUser4Regist.value);
             local psd = trim(InputPassword4Regist.value);
@@ -158,7 +158,7 @@ do
             table.insert(deviceInfor, SystemInfo.deviceType:ToString())
             table.insert(deviceInfor, SystemInfo.operatingSystem)
             table.insert(deviceInfor, SystemInfo.maxTextureSize)
-            CLLNet.httpPost("regist", CallHttp.regist(user, psd, CLCfgBase.self.appUniqueID, "0", Utl.uuid, table.concat(deviceInfor, ",")))
+            CLLNet.httpPostUsermgr(CallHttp.regist(user, psd, CLCfgBase.self.appUniqueID, "0", Utl.uuid, table.concat(deviceInfor, ",")))
         end
     end
 
