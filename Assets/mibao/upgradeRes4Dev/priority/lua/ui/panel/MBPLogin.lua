@@ -68,10 +68,10 @@ do
     function MBPLogin.procNetwork (cmd, succ, msg, data)
         hideHotWheel()
         if succ == 1 then
-            if cmd == "login" or cmd == "regist" then
+            if cmd == UsermgrHttpProto.cmds.loginAccount or cmd == UsermgrHttpProto.cmds.registAccount then
                 local user = data.userInfor
 
-                local uid = user.idx
+                local uid = BioUtl.bio2int(user.idx)
                 if not isNilOrEmpty(uid) then
                     hideTopPanel();
                     if not isNilOrEmpty(InputUser4Login.value) then
@@ -81,9 +81,8 @@ do
                     if not isNilOrEmpty(InputPassword4Login.value) then
                         Prefs.setUserPsd(InputPassword4Login.value)
                     end
-
-                    uid = uid
                     __uid__ = uid;
+                    DateEx.init(data.systime) -- 初始化时间
                     Utl.doCallback(onLoginCallback, uid, onLoginCallbackParam);
                 end
             elseif cmd == "getServerInfor" then
@@ -130,7 +129,7 @@ do
 
             showHotWheel();
             --MBPLogin.accountLogin(user, psd)
-            CLLNet.httpPostUsermgr(UsermgrHttpProto.send.login(user, psd, CLCfgBase.self.appUniqueID))
+            CLLNet.httpPostUsermgr(CallHttp.loginAccount(user, psd, CLCfgBase.self.appUniqueID))
         elseif goName == "ButtonRegist" then
             local user = trim(InputUser4Regist.value);
             local psd = trim(InputPassword4Regist.value);
@@ -158,7 +157,7 @@ do
             table.insert(deviceInfor, SystemInfo.deviceType:ToString())
             table.insert(deviceInfor, SystemInfo.operatingSystem)
             table.insert(deviceInfor, SystemInfo.maxTextureSize)
-            CLLNet.httpPostUsermgr(CallHttp.regist(user, psd, CLCfgBase.self.appUniqueID, "0", Utl.uuid, table.concat(deviceInfor, ",")))
+            CLLNet.httpPostUsermgr(CallHttp.registAccount(user, psd, CLCfgBase.self.appUniqueID, "0", Utl.uuid, table.concat(deviceInfor, ",")))
         end
     end
 
