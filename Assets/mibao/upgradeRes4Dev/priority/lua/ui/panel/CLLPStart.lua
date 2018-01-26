@@ -34,6 +34,7 @@ do
         require("cfg.DBCfg");
         require("db.MBDBPassword");
         require("net.NetProtoUsermgrClient")
+        require("net.NetProtoMibaoClient")
         -- 网络
         Net.self:setLua();
         CLLNet.init();

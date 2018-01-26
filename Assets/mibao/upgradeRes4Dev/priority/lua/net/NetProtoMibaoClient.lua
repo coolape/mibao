@@ -61,14 +61,37 @@ do
             return r;
         end,
     }
+    -- 密码信息
+    NetProtoMibao.ST_psdInfor = {
+        toMap = function(m)
+            local r = {}
+            if m == nil then return r end
+            r[30] = m.platform  -- 平台、网站等，作为key用 string
+            r[31] = m.user  -- 账号 string
+            r[32] = m.time  -- 修改时间 int
+            r[33] = m.psd  -- 密码 string
+            r[34] = m.desc  -- 备注 string
+            return r;
+        end,
+        parse = function(m)
+            local r = {}
+            if m == nil then return r end
+            r.platform = m[30] --  string
+            r.user = m[31] --  string
+            r.time = m[32] --  int
+            r.psd = m[33] --  string
+            r.desc = m[34] --  string
+            return r;
+        end,
+    }
     --==============================
     NetProtoMibao.send = {
     -- 数据同步
-    syndata = function(data)
+    syndata = function(psdInfors)
         local ret = {}
         ret[0] = 22
         ret[1] = NetProtoMibao.__sessionID
-        ret[23] = data; -- 数据信息
+        ret[35] = NetProtoMibao._toList(NetProtoMibao.ST_psdInfor, psdInfors)  -- 数据信息
         return ret
     end,
     }

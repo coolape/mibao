@@ -10,7 +10,9 @@
             return
         end
         local bytes = FileEx.ReadAllBytes(path);
-        mData = BioUtl.readObject(bytes)
+        if bytes then
+            mData = BioUtl.readObject(bytes)
+        end
         mData = mData or {}
         --mData = Utl.fileToObj(path)
         --if mData == nil then
@@ -48,7 +50,7 @@
         --        end
         --    end
         --end
-
+        data.time = DateEx.nowMS;
         local isUpgrade = false
         for i, v in ipairs(mData) do
             if v.platform == data.platform then

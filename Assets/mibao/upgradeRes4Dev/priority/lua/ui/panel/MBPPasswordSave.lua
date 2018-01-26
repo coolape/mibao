@@ -64,13 +64,12 @@ do
 
     -- 网络请求的回调；cmd：指命，succ：成功失败，msg：消息；paras：服务器下行数据
     function MBPPasswordSave.procNetwork (cmd, succ, msg, paras)
-        --[[
-        if(succ == 1) then
-          if(cmd == "xxx") then
-            -- TODO:
-          end
+        if (succ == 1) then
+            if (cmd == NetProtoMibao.cmds.syndata) then
+                hideHotWheel()
+                CLAlert.add("success");
+            end
         end
-        --]]
     end
 
     -- 处理ui上的事件，例如点击等
@@ -92,6 +91,10 @@ do
             MBPPasswordSave.search(objs.InputSearchKey.value)
         elseif goName == "SpriteBg" then
             MBPPasswordSave.hideSearch()
+        elseif goName == "ButtonSyn" then
+            local data = MBDBPassword.getData()
+            showHotWheel()
+            CLLNet.httpPostMibao(NetProtoMibao.send.syndata(data))
         end
     end
     function MBPPasswordSave.hideSearch()

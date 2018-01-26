@@ -82,6 +82,8 @@ do
                         Prefs.setUserPsd(InputPassword4Login.value)
                     end
                     __uid__ = uid;
+                    NetProtoMibao.__sessionID = uid;
+                    NetProtoUsermgr.__sessionID = uid;
                     DateEx.init(data.systime) -- 初始化时间
                     Utl.doCallback(onLoginCallback, uid, onLoginCallbackParam);
                 end
