@@ -59,8 +59,17 @@ do
     function MBPMain.uiEventDelegate( go )
         local goName = go.name;
         if (goName == "Button01") then
-            -- 密码保护
-            getPanelAsy("PanelPasswordSave", onLoadedPanelTT)
+            if isNilOrEmpty(__uid__) then
+                getPanelAsy("PanelLogin", onLoadedPanelTT, {function (uid)
+                    if uid then
+                        getPanelAsy("PanelPasswordSave", onLoadedPanelTT)
+                    end
+                end}
+                );
+            else
+                -- 密码保护
+                getPanelAsy("PanelPasswordSave", onLoadedPanelTT)
+            end
         end
     end
 

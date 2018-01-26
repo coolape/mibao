@@ -1,8 +1,8 @@
 ﻿--- 网络下行数据调度器
 do
     require("bio.BioUtl")
-    require("net.NetProtoClient")
-    require("net.UsermgrHttpProtoClient")
+    require("net.NetProtoMibaoClient")
+    require("net.NetProtoUsermgrClient")
     CLLNet = {}
 
     local strLen = string.len;
@@ -17,25 +17,33 @@ do
         csSelf = Net.self;
     end
 
-    local baseUrlUsermgr = "http://127.0.0.1:8801/usermgr/postbio"
-    function CLLNet.httpPostUsermgr( data)
-        local postData = BioUtl.writeObject(data)
-
-        WWWEx.newWWWPostBytes(CLMainBase.self, Utl.urlAddTimes(baseUrlUsermgr),
+    local httpPostBio = function(url, postData, callback)
+        WWWEx.newWWWPostBytes(CLMainBase.self,
+                Utl.urlAddTimes(url),
                 postData,
                 CLAssetType.bytes,
-                5, 10, CLLNet.onResponsed,
+                5, 10, callback,
                 CLLNet.httpError,
                 CLLNet.httpError, nil);
     end
 
-    function CLLNet.onResponsed(content, orgs)
+    local baseUrlUsermgr = "http://127.0.0.1:8801/usermgr/postbio"
+    function CLLNet.httpPostUsermgr( data)
+        local postData = BioUtl.writeObject(data)
+        httpPostBio(baseUrlUsermgr, postData, CLLNet.onResponsedUsermgr)
+    end
+
+    function CLLNet.onResponsedUsermgr(content, orgs)
         local map = nil
         if content then
             map = BioUtl.readObject(content)
         end
         if map then
-            CLLNet.dispatchHttp(map)
+            local dispatchInfor = NetProtoUsermgr.dispatch[map[0]]
+            if dispatchInfor then
+                local data = dispatchInfor.onReceive(map);
+                CLLNet.dispatch(data)
+            end
         end
     end
 
@@ -43,6 +51,27 @@ do
         --CLLNet.dispatchHttp(map)
     end
 
+    local baseUrlMibao = "http://127.0.0.1:8802/mibao/postbio"
+    function CLLNet.httpPostMibao( data)
+        local postData = BioUtl.writeObject(data)
+        httpPostBio(baseUrlMibao, postData, CLLNet.onResponsedMibao)
+    end
+
+    function CLLNet.onResponsedMibao(content, orgs)
+        local map = nil
+        if content then
+            map = BioUtl.readObject(content)
+        end
+        if map then
+            local dispatchInfor = NetProtoMibao.dispatch[map[0]]
+            if dispatchInfor then
+                local data = dispatchInfor.onReceive(map);
+                CLLNet.dispatch(data)
+            end
+        end
+    end
+
+    --============================================================
     -- 组包
     function CLLNet.packMsg(data, tcp)
         local bytes = BioUtl.writeObject(data)
@@ -154,18 +183,7 @@ do
             return ret;
         end
     end
-
-    function CLLNet.dispatchHttp(map)
-        if (map == nil) then
-            return
-        end
-
-        local dispatchInfor = UsermgrHttpProto.dispatch[map[0]]
-        if dispatchInfor then
-            local data = dispatchInfor.onReceive(map);
-            CLLNet.dispatch(data)
-        end
-    end
+    --============================================================
 
     function CLLNet.dispatchGame(map)
         if (map == nil) then

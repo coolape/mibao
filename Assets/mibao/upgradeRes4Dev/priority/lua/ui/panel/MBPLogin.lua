@@ -1,6 +1,6 @@
 ﻿-- xx界面
 do
-    require("net.NetProtoClient")
+    require("net.NetProtoMibaoClient")
     MBPLogin = {}
 
     local csSelf = nil;
@@ -68,7 +68,7 @@ do
     function MBPLogin.procNetwork (cmd, succ, msg, data)
         hideHotWheel()
         if succ == 1 then
-            if cmd == UsermgrHttpProto.cmds.loginAccount or cmd == UsermgrHttpProto.cmds.registAccount then
+            if cmd == NetProtoUsermgr.cmds.loginAccount or cmd == NetProtoUsermgr.cmds.registAccount then
                 local user = data.userInfor
 
                 local uid = BioUtl.bio2int(user.idx)

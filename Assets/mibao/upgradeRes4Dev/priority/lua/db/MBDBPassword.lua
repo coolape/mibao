@@ -1,4 +1,5 @@
 ﻿do
+    require("bio.BioUtl")
     MBDBPassword = {}
     local path = Utl.chgToSDCard(joinStr(Application.persistentDataPath, "/coolape/mibao/", __uid__, "_", "psdSave.d"));
     ---@type System.Collections.ArrayList
@@ -8,10 +9,13 @@
         if mData ~= nil then
             return
         end
-        mData = Utl.fileToObj(path)
-        if mData == nil then
-            mData = ArrayList();
-        end
+        local bytes = FileEx.ReadAllBytes(path);
+        mData = BioUtl.readObject(bytes)
+        mData = mData or {}
+        --mData = Utl.fileToObj(path)
+        --if mData == nil then
+        --    mData = ArrayList();
+        --end
     end
 
     function MBDBPassword.clean()
@@ -22,10 +26,11 @@
         if mData == nil then
             return
         end
-        local ms = MemoryStream();
-        B2OutputStream.writeObject(ms, mData);
-        Directory.CreateDirectory(Path.GetDirectoryName(path));
-        FileEx.WriteAllBytes(path, ms:ToArray());
+        --local ms = MemoryStream();
+        --B2OutputStream.writeObject(ms, mData);
+        --Directory.CreateDirectory(Path.GetDirectoryName(path));
+        --FileEx.WriteAllBytes(path, ms:ToArray());
+        FileEx.WriteAllBytes(BioUtl.writeObject(mData))
     end
 
     function MBDBPassword.getData()
@@ -45,15 +50,15 @@
         --end
 
         local isUpgrade = false
-        for i = 0, mData.Count - 1 do
-            if MapEx.getString(mData[i], "platform") == MapEx.getString(data, "platform") then
+        for i, v in ipairs(mData) do
+            if v.platform == data.platform then
                 mData[i] = data;
                 isUpgrade = true;
                 break;
             end
         end
         if not isUpgrade then
-            mData:Add(data);
+            table.insert(mData, data)
         end
         MBDBPassword.save();
     end
@@ -64,9 +69,9 @@
         end
 
         MBDBPassword.init();
-        for i = 0, mData.Count - 1 do
-            if MapEx.getString(mData[i], "platform") == key and MapEx.getString(mData[i], "user") == user then
-                mData:RemoveAt(i);
+        for i ,v in ipairs(mData) do
+            if v.platform == key and v.user == user then
+                table.remove(mData, i)
                 break
             end
         end
