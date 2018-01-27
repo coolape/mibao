@@ -11,15 +11,16 @@ do
     -- i = i + 1;
     -- end;
 
-
     -------------------------------------------------------
     -- 重写require
     local localReq = require
     function require(path)
-        local ret, err = pcall(localReq, path);
+        local ret, result = pcall(localReq, path);
         if not ret then
-            printe(err)
+            print("err:" .. result)
+            return nil
         end
+        return result
     end
 
     -- 重新命名

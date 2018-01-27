@@ -40,7 +40,7 @@ do
             objs.scrollView:ResetPosition();
         end, 0.1);
         objs.grid:setList(MBDBPassword.getData(), MBPPasswordSave.initCell);
-        objs.scrollView:ResetPosition()
+        --objs.scrollView:ResetPosition()
     end
 
     function MBPPasswordSave.initCell(cell, data)
@@ -63,10 +63,12 @@ do
     end
 
     -- 网络请求的回调；cmd：指命，succ：成功失败，msg：消息；paras：服务器下行数据
-    function MBPPasswordSave.procNetwork (cmd, succ, msg, paras)
+    function MBPPasswordSave.procNetwork (cmd, succ, msg, datas)
         if (succ == 1) then
             if (cmd == NetProtoMibao.cmds.syndata) then
                 hideHotWheel()
+                MBDBPassword.setData(datas.newData);
+                MBPPasswordSave.refresh()
                 CLAlert.add("success");
             end
         end

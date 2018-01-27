@@ -85,7 +85,6 @@ do
             getPanelAsy("PanelSecretKey", onLoadedPanelTT, { cmd = "set",
                 callback = function(key)
                     local m = objs.inputRoot:getValue(true);
-                    printe(type(m))
                     m.psd = EnAndDecryption.encoder(objs.InputPassword.value, key);
                     MBDBPassword.addOrUpdate(m)
                     hideTopPanel();

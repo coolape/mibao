@@ -161,6 +161,11 @@ namespace Coolape
 
 		public void refreshContentOnly (object data, bool UpdatePosition)
 		{
+			if(list == null || list.Count == 0) {
+				//说明之前没有数据
+				setList(data, this.initCellCallback);
+				return;
+			}
 			list = wrapList (data);
 			UIWidget t = null;
 			int tmpIndex = 0;

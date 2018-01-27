@@ -23,25 +23,10 @@ public class CLUIInputRoot : MonoBehaviour
 		return msg;
 	}
 
-	//	public Hashtable getValue(Hashtable map) {
-	//		if(map == null) {
-	//			map = new Hashtable();
-	//		}
-	//		CLUIInput cell = null;
-	//		int count = inputs == null ? 0 : inputs.Length;
-	//		for(int i=0; i < count; i++) {
-	//			cell  = inputs[i];
-	//			map[cell.jsonKey] = cell.value;
-	//		}
-	//		return map;
-	//	}
-
 	void setVal (object map, object key, object val)
 	{
 		if (map is LuaTable) {
-			Debug.LogError (key + "====" + val);
-//			((LuaTable)obj) [key] = val;
-			((LuaTable)map) ["key"] = val;
+			((LuaTable)map) [key] = val;
 		} else if (map is Hashtable) {
 			((Hashtable)map) [key] = val;
 		}
@@ -79,7 +64,6 @@ public class CLUIInputRoot : MonoBehaviour
 		if (map == null) {
 			if (isLuaTable) {
 				map = CLBaseLua.mainLua.NewTable ();
-				((LuaTable)map) ["key"] = 123;
 			} else {
 				map = new Hashtable ();
 			}
@@ -90,13 +74,11 @@ public class CLUIInputRoot : MonoBehaviour
 		for (int i = 0; i < count; i++) {
 			cell = tr.GetChild (i).GetComponent<CLUIInput> ();
 			if (cell != null && !string.IsNullOrEmpty (cell.jsonKey)) {
-//				map [cell.jsonKey] = cell.value;
 				setVal (map, cell.jsonKey, cell.value);
 			}
 
 			root = tr.GetChild (i).GetComponent<CLUIInputRoot> ();
 			if (root != null && !string.IsNullOrEmpty (root.jsonKey)) {
-//				map [root.jsonKey] = getValue(tr.GetChild(i), null);
 				setVal (map, root.jsonKey, getValue (tr.GetChild (i), null, isLuaTable));
 			} else {
 				map = getValue (tr.GetChild (i), map, isLuaTable);

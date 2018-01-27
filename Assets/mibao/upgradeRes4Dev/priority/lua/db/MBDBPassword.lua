@@ -1,11 +1,12 @@
 ﻿do
     require("bio.BioUtl")
     MBDBPassword = {}
-    local path = Utl.chgToSDCard(joinStr(Application.persistentDataPath, "/coolape/mibao/", __uid__, "_", "psdSave.d"));
+    local path = "";
     ---@type System.Collections.ArrayList
     local mData = nil;
 
     function MBDBPassword.init()
+        path = Utl.chgToSDCard(joinStr(Application.persistentDataPath, "/coolape/mibao/", "mm_",  __uid__, "_", "psdSave.d"));
         if mData ~= nil then
             return
         end
@@ -14,10 +15,6 @@
             mData = BioUtl.readObject(bytes)
         end
         mData = mData or {}
-        --mData = Utl.fileToObj(path)
-        --if mData == nil then
-        --    mData = ArrayList();
-        --end
     end
 
     function MBDBPassword.clean()
@@ -28,11 +25,7 @@
         if mData == nil then
             return
         end
-        --local ms = MemoryStream();
-        --B2OutputStream.writeObject(ms, mData);
-        --Directory.CreateDirectory(Path.GetDirectoryName(path));
-        --FileEx.WriteAllBytes(path, ms:ToArray());
-        FileEx.WriteAllBytes(BioUtl.writeObject(mData))
+        FileEx.WriteAllBytes(path, BioUtl.writeObject(mData))
     end
 
     function MBDBPassword.getData()
@@ -40,16 +33,13 @@
         return mData;
     end
 
+    function MBDBPassword.setData(d)
+        mData = d
+        MBDBPassword.save()
+    end
+
     function MBDBPassword.addOrUpdate(data)
-        MBDBPassword.init();
-        --if not isNilOrEmpty(oldKey) then
-        --    for i = 0, mData.Count - 1 do
-        --        if MapEx.getString(mData[i], "platform") == oldKey then
-        --            mData:RemoveAt(i);
-        --            break
-        --        end
-        --    end
-        --end
+        MBDBPassword.init()
         data.time = DateEx.nowMS;
         local isUpgrade = false
         for i, v in ipairs(mData) do
