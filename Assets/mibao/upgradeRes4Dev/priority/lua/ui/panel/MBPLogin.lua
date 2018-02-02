@@ -84,7 +84,7 @@ do
                     __uid__ = uid;
                     NetProtoMibao.__sessionID = uid;
                     NetProtoUsermgr.__sessionID = uid;
-                    DateEx.init(data.systime) -- 初始化时间
+                    DateEx.init(BioUtl.bio2long(data.systime)) -- 初始化时间
                     Utl.doCallback(onLoginCallback, uid, onLoginCallbackParam);
                 end
             elseif cmd == "getServerInfor" then
