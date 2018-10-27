@@ -29,7 +29,7 @@ namespace XLua
         internal LuaCSFunction StaticCSFunctionWraper, FixCSFunctionWraper;
 
         internal LuaCSFunction DelegateCtor;
-        
+
         public StaticLuaCallbacks()
         {
             GcMeta = new LuaCSFunction(StaticLuaCallbacks.LuaGC);
@@ -94,7 +94,7 @@ namespace XLua
                 LuaCSFunction func = (LuaCSFunction)translator.FastGetCSObj(L, LuaAPI.xlua_upvalueindex(1));
                 return func(L);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return LuaAPI.luaL_error(L, "c# exception in StaticCSFunction:" + e);
             }
@@ -575,7 +575,8 @@ namespace XLua
                     return LuaAPI.luaL_error(L, "#2 param need a System.Type!");
                 }
                 //UnityEngine.Debug.Log("============================load type by __index:" + type);
-                translator.TryDelayWrapLoader(L, type);
+                //translator.TryDelayWrapLoader(L, type);
+                translator.GetTypeId(L, type);
                 LuaAPI.lua_pushvalue(L, 2);
                 LuaAPI.lua_rawget(L, 1);
                 return 1;
@@ -841,7 +842,7 @@ namespace XLua
                 Type type = translator.FindType(className);
                 if (type != null)
                 {
-                    if (translator.TryDelayWrapLoader(L, type))
+                    if (translator.GetTypeId(L, type) >= 0)
                     {
                         LuaAPI.lua_pushboolean(L, true);
                     }
@@ -901,6 +902,10 @@ namespace XLua
             {
                 string className = LuaAPI.lua_tostring(L, idx);
                 return translator.FindType(className);
+            }
+            else if (translator.GetObject(L, idx) is Type)
+            {
+                return translator.GetObject(L, idx) as Type;
             }
             else
             {
@@ -985,7 +990,11 @@ namespace XLua
                     return LuaAPI.luaL_error(L, "xlua.private_accessible, can not find c# type");
                 }
 
-                Utils.MakePrivateAccessible(L, type);
+                while(type != null)
+                {
+                    translator.PrivateAccessible(L, type);
+                    type = type.BaseType;
+                }
                 return 0;
             }
             catch (Exception e)
@@ -1077,6 +1086,21 @@ namespace XLua
             catch (Exception e)
             {
                 return LuaAPI.luaL_error(L, "c# exception in ToFunction: " + e);
+            }
+        }
+
+        [MonoPInvokeCallback(typeof(LuaCSFunction))]
+        public static int ReleaseCsObject(RealStatePtr L)
+        {
+            try
+            {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+                translator.ReleaseCSObj(L, 1);
+                return 0;
+            }
+            catch (Exception e)
+            {
+                return LuaAPI.luaL_error(L, "c# exception in ReleaseCsObject: " + e);
             }
         }
     }

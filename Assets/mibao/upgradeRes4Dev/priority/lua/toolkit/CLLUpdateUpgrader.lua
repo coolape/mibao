@@ -34,10 +34,9 @@ do
         local url = PStr.b():a(CLVerManager.self.baseUrl):a("/"):a(upgraderVer):e();
         url = Utl.urlAddTimes(url);
 
-        WWWEx.newWWW(CLVerManager.self, url, CLAssetType.text,
-        3, 3, CLLUpdateUpgrader.onGetServerUpgraderVer,
-        CLLUpdateUpgrader.onGetServerUpgraderVer,
-        CLLUpdateUpgrader.onGetServerUpgraderVer, nil);
+        WWWEx.get(url, CLAssetType.text,
+            CLLUpdateUpgrader.onGetServerUpgraderVer,
+            CLLUpdateUpgrader.onGetServerUpgraderVer, nil, true);
     end
 
     function CLLUpdateUpgrader.onGetServerUpgraderVer(content, orgs)
@@ -57,10 +56,10 @@ do
         local url = "";
         local verVal = MapEx.getString(serverVer, "upgraderVer");
         url = PStr.b():a(CLVerManager.self.baseUrl):a("/"):a(upgraderName):a("."):a(verVal):e();
-        WWWEx.newWWW(CLVerManager.self, url, CLAssetType.text,
-        3, 5, CLLUpdateUpgrader.ongetNewestPreupgradList,
-        CLLUpdateUpgrader.ongetNewestPreupgradList,
-        CLLUpdateUpgrader.ongetNewestPreupgradList, upgraderName);
+        WWWEx.get(url, CLAssetType.text,
+            CLLUpdateUpgrader.ongetNewestPreupgradList,
+            CLLUpdateUpgrader.ongetNewestPreupgradList,
+            upgraderName, true);
     end
 
     function CLLUpdateUpgrader.ongetNewestPreupgradList(content, orgs)
@@ -87,10 +86,9 @@ do
             local name = cell[0]
             local ver = cell[1]
             local url = PStr.b():a(CLVerManager.self.baseUrl):a("/"):a(name):a("."):a(ver):e();
-            WWWEx.newWWW(CLVerManager.self, url, CLAssetType.bytes,
-            3, 5, CLLUpdateUpgrader.ongetNewestUpgrader,
+            WWWEx.get(url, CLAssetType.bytes,
             CLLUpdateUpgrader.ongetNewestUpgrader,
-            CLLUpdateUpgrader.ongetNewestUpgrader, { list, i, name });
+            CLLUpdateUpgrader.ongetNewestUpgrader, { list, i, name }, true);
         end
     end
 
@@ -123,10 +121,9 @@ do
         local verVal = MapEx.getInt(serverVer, "channelVer");
         -- 注意是加了版本号的，会使用cdn
         local url = PStr.b():a(CLVerManager.self.baseUrl):a("/"):a(channelName):a("."):a(verVal):e();
-        WWWEx.newWWW(CLVerManager.self, url, CLAssetType.text,
-        3, 5, CLLUpdateUpgrader.onGetChannelInfor,
+        WWWEx.get(url, CLAssetType.text,
         CLLUpdateUpgrader.onGetChannelInfor,
-        CLLUpdateUpgrader.onGetChannelInfor, channelName);
+        CLLUpdateUpgrader.onGetChannelInfor, channelName, true);
     end
 
     function CLLUpdateUpgrader.onGetChannelInfor(content, orgs)

@@ -8,6 +8,8 @@ xLua目前以zip包形式发布，在工程目录下解压即可。
 
 可以，但生成代码目录需要配置一下（默认放Assets\XLua\Gen目录），具体可以看《XLua的配置.doc》的GenPath配置介绍。
 
+更改目录要注意的是：生成代码和xLua核心代码必须在同一程序集。如果你要用热补丁特性，xLua核心代码必须在Assembly-CSharp程序集。
+
 ## lua源码只能以txt后缀？
 
 什么后缀都可以。
@@ -17,6 +19,12 @@ xLua目前以zip包形式发布，在工程目录下解压即可。
 如果你不打包到安装包，就没有后缀的限制：比如自行下载到某个目录（这也是热更的正确姿势），然后通过CustomLoader或者设置package.path去读这个目录。
 
 那为啥xLua本身带的lua源码（包括示例）为什么都是txt结尾呢？因为xLua本身就一个库，不含下载功能，也不方便运行时去某个地方下载代码，通过TextAsset是较简单的方式。
+
+## 编辑器(或非il2cpp的android)下运行正常，ios下运行调用某函数报“attempt to call a nil value”
+
+il2cpp默认会对诸如引擎、c#系统api，第三方dll等等进行代码剪裁。简单来说就是这些地方的函数如果你C#代码没访问到的就不编译到你最终发布包。
+
+解决办法：增加引用（比如配置到LuaCallCSharp，或者你自己C#代码增加那函数的访问），或者通过link.xml配置（当配置了ReflectionUse后，xlua会自动帮你配置到link.xml）告诉il2cpp别剪裁某类型。
 
 ## Plugins源码在哪里可以找到，怎么使用？
 
@@ -45,6 +53,12 @@ ios和osx需要在mac下编译。
 解决办法，确认XXX（类型名）加上CSharpCallLua后，清除代码后运行。
 
 如果编辑器下没问题，发布到手机报这错，表示你发布前没生成代码（执行“XLua/Generate Code”）。
+
+## unity5.5以上执行"XLua/Hotfix Inject In Editor"菜单会提示"WARNING: The runtime version supported by this application is unavailable."
+
+这是因为注入工具是用.net3.5编译，而unity5.5意思MonoBleedingEdge的mono环境并没3.5支持导致的，不过一般而言都向下兼容，目前为止也没发现该warning带来什么问题。
+
+可能有人发现定义INJECT_WITHOUT_TOOL用内嵌模式会没有该warning，但问题是这模式是调试问题用的，不建议使用，因为可能会有一些库冲突问题。
 
 ## hotfix下怎么触发一个event
 
@@ -116,11 +130,13 @@ ios下的限制有两个：1、没有jit；2、代码剪裁（stripping）；
 
 简而言之，除了CSharpCallLua是必须的（这类生成代码往往不多），LuaCallSharp生成都可以改为用反射。
 
-## 支持泛化方法的调用么？
+## 支持泛型方法的调用么？
 
-不直接支持，但能调用到。如果是静态方法，可以自己写个封装来实例化泛化方法。
+部分支持，支持的程度可以看下[例子9](../Examples/09_GenericMethod/)
 
-如果是成员方法，xLua支持扩展方法，你可以添加一个扩展方法来实例化泛化方法。该扩展方法使用起来就和普通成员方法一样。
+其它情况也有办法调用到。如果是静态方法，可以自己写个封装来实例化泛型方法。
+
+如果是成员方法，xLua支持扩展方法，你可以添加一个扩展方法来实例化泛型方法。该扩展方法使用起来就和普通成员方法一样。
 
 ```csharp
 // C#
@@ -148,9 +164,18 @@ end)
 
 ## this[string field]或者this[object field]操作符重载为什么在lua无法访问？（比如Dictionary\<string, xxx\>, Dictionary\<object, xxx\>在lua中无法通过dic['abc']或者dic.abc检索值）
 
-在2.1.5~2.1.6版本把这个特性去掉，因为：1、这个特性会导致基类定义的方法、属性、字段等无法访问（比如Animation无法访问到GetComponent方法）；2、key为当前类某方法、属性、字段的名字的数据无法检索，比如Dictionary类型，dic['TryGetValue']返回的是一个函数，指向Dictionary的TryGetValue方法。
+因为：1、这个特性会导致基类定义的方法、属性、字段等无法访问（比如Animation无法访问到GetComponent方法）；2、key为当前类某方法、属性、字段的名字的数据无法检索，比如Dictionary类型，dic['TryGetValue']返回的是一个函数，指向Dictionary的TryGetValue方法。
 
-建议直接方法该操作符的等效方法，比如Dictionary的TryGetValue，如果该方法没有提供，可以在C#那通过Extension method封装一个使用。
+如果你的版本大于2.1.11，可以用get_Item来获取值，用set_Item来设置值。要注意只有this[string field]或者this[object field]才有这两个替代api，其它类型的key是没有的。
+
+~~~lua
+dic:set_Item('a', 1)
+dic:set_Item('b', 2)
+print(dic:get_Item('a'))
+print(dic:get_Item('b'))
+~~~
+
+如果你的版本小于或等于2.1.11，建议直接方法该操作符的等效方法，比如Dictionary的TryGetValue，如果该方法没有提供，可以在C#那通过Extension method封装一个使用。
 
 ## 有的Unity对象，在C#为null，在lua为啥不为nil呢？比如一个已经Destroy的GameObject
 
@@ -207,6 +232,10 @@ print(dic:TryGetValue('a'))
 如果你是通过xlua.hotfix(class, method, func)注入到C#，则通过xlua.hotfix(class, method, nil)删除；
 
 要注意以上操作在Dispose之前完成。
+
+## 调用LuaEnv.Dispose崩溃
+
+很可能是这个Dispose操作是由lua那驱动执行，相当于在lua执行的过程中把lua虚拟机给释放了，改为只由C#执行即可。
 
 ## C#参数（或字段）类型是object时，传递整数默认是以long类型传递，如何指明其它类型？比如int
 
@@ -323,3 +352,8 @@ f2(obj, 1, 2) --调用int版本
 ~~~
 
 注意：xlua.tofunction由于使用不太方便，以及使用了反射，所以建议做作为临时方案，尽量用封装的方法来解决。
+
+## 支持interface扩展方法么？
+
+考虑到生成代码量，不支持通过obj:ExtentionMethod()的方式去调用，支持通过静态方法的方式去调用CS.ExtentionClass.ExtentionMethod(obj)
+

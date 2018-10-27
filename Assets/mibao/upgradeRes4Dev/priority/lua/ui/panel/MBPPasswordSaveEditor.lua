@@ -23,8 +23,8 @@ do
         objs.scrollView = objs.Content:GetComponent("UIScrollView");
         --objs.grid:setOldClip(objs.Content.clipOffset, objs.Content.transform.localPosition, objs.grid.transform.localPosition)
 
-        ---@type CLUIInputRoot
-        objs.inputRoot = getCC(transform, "PanelList/Grid", "CLUIInputRoot")
+        ---@type CLUIFormRoot
+        objs.inputRoot = getCC(transform, "PanelList/Grid", "CLUIFormRoot")
         objs.InputPassword = getCC(transform, "PanelList/Grid/InputPassword", "UIInput")
         objs.ButtonDel = getChild(transform, "AnchorTop/offset/ButtonDel").gameObject;
     end

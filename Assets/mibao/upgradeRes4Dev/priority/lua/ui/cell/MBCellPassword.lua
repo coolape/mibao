@@ -15,8 +15,8 @@ do
         --[[
         上的组件：getChild(transform, "offset", "Progress BarHong"):GetComponent("UISlider");
         --]]
-        ---@type CLUIInputRoot
-        objs.root = csSelf:GetComponent("CLUIInputRoot");
+        ---@type CLUIFormRoot
+        objs.root = csSelf:GetComponent("CLUIFormRoot");
         objs.LabelPlatform = getCC(transform, "LabelPlatform", "UILabel")
         objs.LabelDesc = getCC(transform, "LabelDesc", "UILabel")
         objs.LabelUser = getCC(transform, "LabelUser", "UILabel")

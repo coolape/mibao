@@ -42,9 +42,35 @@ namespace Coolape
 		{
 			host = ihost;
 			port = iport;
-			mSocket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-			IPAddress ip = IPAddress.Parse (host);
+			IPAddress ip = null;
+			try {
+				// is ip xx.xx.xx.xx
+				ip = IPAddress.Parse (host);
+			} catch (Exception e) {
+				// may be is dns
+				try {
+					IPAddress[] address = Dns.GetHostAddresses (host);
+					if (address.Length > 0) {
+						ip = address [0];
+					}
+				} catch (Exception e2) {
+					Debug.LogError (e2);
+					return;
+				}
+			}
+			if (ip == null) {
+				Debug.LogError ("Get ip is null");
+				return;
+			}
 			ipe = new IPEndPoint (ip, port);
+
+			if (ip.AddressFamily == AddressFamily.InterNetworkV6) {
+				Debug.LogWarning ("is ipv6");
+				mSocket = new Socket (AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+			} else {
+				Debug.LogWarning ("is ipv4");
+				mSocket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+			}
 
 			mTmpBufferSize = 1024;
 			mTmpBuffer = new byte[mTmpBufferSize];
@@ -63,31 +89,40 @@ namespace Coolape
 		// 异步模式//////////////////////////////////////////////////////////////////
 		// 异步模式//////////////////////////////////////////////////////////////////
 		public  bool IsConnectionSuccessful = false;
-		public  int timeoutMSec = 10000;	//毫秒
-		public ManualResetEvent TimeoutObject = new ManualResetEvent (false);
+		public  int timeoutMSec = 10000;
+        public int maxTimeoutTimes = 3;
+        //毫秒
+        //public ManualResetEvent TimeoutObject = null;
+        Timer connectTimeout = null;
 		NetCallback offLineCallback;
 
 		public void connectAsync (NetCallback callback, NetCallback offLineCallback)
 		{
+			if (ipe == null) {
+				callback (this, false);
+				return;
+			}
 			this.offLineCallback = offLineCallback;
 			IsConnectionSuccessful = false;
 			connectCallbackFunc = callback;
-			mSocket.BeginConnect (ipe, (AsyncCallback)connectCallback, this);
-		
-			if (TimeoutObject.WaitOne (timeoutMSec, false)) {
-				if (IsConnectionSuccessful) {
-					//return tcpclient;
-					//callback (true);
-				} else {
-					//mSocket.Close ();
-					callback (this, false);
-				}
-			} else {
-				callback (this, false);
-			}
-		}
 
-		public void close ()
+			mSocket.BeginConnect (ipe, (AsyncCallback)connectCallback, this);
+            if(connectTimeout != null) {
+                connectTimeout.Dispose();
+                connectTimeout = null;
+            }
+            connectTimeout = TimerEx.schedule((TimerCallback)connectTimeOut, null, timeoutMSec);
+        }
+
+        void connectTimeOut(object orgs)
+        {
+            if (IsConnectionSuccessful) {
+            } else {
+                connectCallbackFunc(this, false);
+            }
+        }
+
+        public void close ()
 		{
 			if (mSocket != null)
 				mSocket.Close ();
@@ -122,7 +157,10 @@ namespace Coolape
 				client.connectCallbackFunc (client, false);
 				client.close ();
 			} finally {
-				client.TimeoutObject.Set ();
+                if(connectTimeout != null) {
+                    connectTimeout.Dispose();
+                    connectTimeout = null;
+                }
 			}
 		}
 
@@ -142,9 +180,11 @@ namespace Coolape
 					client.timeoutCheckTimer.Dispose ();
 					client.timeoutCheckTimer = null;
 				}
-				if (client.isActive) {
-					//从远程设备读取Number据
-					int bytesRead = client.mSocket.EndReceive (ar);
+				if (client.isActive)
+                {
+                    client.failTimes = 0;
+                    //从远程设备读取Number据
+                    int bytesRead = client.mSocket.EndReceive (ar);
 					if (bytesRead > 0) {
 //					Debug.Log ("receive len==" + bytesRead);
 						// 有Number据，存储.
@@ -211,10 +251,15 @@ namespace Coolape
 
 		public void sendTimeOut (object orgs)
 		{
-			if (offLineCallback != null) {
-				offLineCallback (this, null);
-			}
-			close ();
+            failTimes++;
+            if (failTimes > maxTimeoutTimes)
+            {
+                if (offLineCallback != null)
+                {
+                    offLineCallback(this, null);
+                }
+                close();
+            }
 		}
 
 		private void SendCallback (IAsyncResult ar)

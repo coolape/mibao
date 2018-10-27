@@ -4,6 +4,7 @@ using System.Collections;
 using Coolape;
 using System.IO;
 using System.Threading;
+using System.Collections.Generic;
 
 public class ECLUpgradeListProc : EditorWindow
 {
@@ -21,6 +22,8 @@ public class ECLUpgradeListProc : EditorWindow
 	static bool isSelectMod = false;
 	static Callback onSelectedCallback;
 	static object selectedCallbackParams;
+	static int selectedServerIndex = 0;
+	static HotUpgradeServerInfor selectedServer = null;
 
 	public ECLUpgradeListProc ()
 	{
@@ -38,6 +41,7 @@ public class ECLUpgradeListProc : EditorWindow
 			if (uploadResult) {
 				// success
 				updateState (selectedPackageName);
+				uploadOss (selectedPackageName);
 				EditorUtility.DisplayDialog ("Success", "Success !", "Okey");
 			} else {
 				EditorUtility.DisplayDialog ("Fail", "Failed !", "Okey");
@@ -59,6 +63,55 @@ public class ECLUpgradeListProc : EditorWindow
 				EditorWindow.GetWindow<ECLProjectManager> (false, "CoolapeProject", true);
 			}
 			Close ();
+			return;
+		}
+
+		if (ECLProjectManager.data.hotUpgradeServers.Count > 0) {
+			ECLEditorUtl.BeginContents ();
+			{
+				List<string> toolbarNames = new List<string> ();
+				for (int i = 0; i < ECLProjectManager.data.hotUpgradeServers.Count; i++) {
+					HotUpgradeServerInfor dd = ECLProjectManager.data.hotUpgradeServers [i] as HotUpgradeServerInfor;
+					toolbarNames.Add (dd.name);
+				}
+				selectedServerIndex = GUILayout.Toolbar (selectedServerIndex, toolbarNames.ToArray ());
+				HotUpgradeServerInfor hsi = ECLProjectManager.data.hotUpgradeServers [selectedServerIndex] as HotUpgradeServerInfor;
+				selectedServer = hsi;
+//						ECLProjectSetting.cellServerInor (hsi, false);
+				//===================================================
+				GUILayout.BeginHorizontal ();
+				{
+					GUILayout.Label ("Key:", ECLEditorUtl.width200);
+					GUILayout.TextField (selectedServer.key);
+				}
+				GUILayout.EndHorizontal ();
+				//===================================================
+				GUILayout.BeginHorizontal ();
+				{
+					GUILayout.Label ("Hot Upgrade Base Url:", ECLEditorUtl.width200);
+					GUILayout.TextField (selectedServer.hotUpgradeBaseUrl);
+				}
+				GUILayout.EndHorizontal ();
+				//===================================================
+				GUILayout.BeginHorizontal ();
+				{
+					GUILayout.Label ("Host 4 Upload Upgrade Package:", ECLEditorUtl.width200);
+					GUILayout.TextField (selectedServer.host4UploadUpgradePackage);
+				}
+				GUILayout.EndHorizontal ();
+
+				GUILayout.BeginHorizontal ();
+				{
+					GUILayout.Label ("Port 4 Upload Upgrade Package:", ECLEditorUtl.width200);
+					EditorGUILayout.IntField (selectedServer.port4UploadUpgradePackage);
+				}
+				GUILayout.EndHorizontal ();
+			}
+			ECLEditorUtl.EndContents ();
+		}
+
+		if (selectedServer == null) {
+			GUILayout.Label ("Please select a server!");
 			return;
 		}
 
@@ -104,9 +157,7 @@ public class ECLUpgradeListProc : EditorWindow
 
 					EditorGUILayout.BeginHorizontal ();
 					{
-//					GUI.enabled = false;
 						EditorGUILayout.TextField (MapEx.getString (item, "name"), GUILayout.Width (160));
-//						EditorGUILayout.TextField (getUpgradePackageMd5 (MapEx.getString (item, "name")), GUILayout.Width (250));
 						EditorGUILayout.TextField (MapEx.getString (item, "md5"), GUILayout.Width (250));
 
 						if (!MapEx.getBool (item, "exist")) {
@@ -114,10 +165,10 @@ public class ECLUpgradeListProc : EditorWindow
 						}
 						EditorGUILayout.TextField (MapEx.getBool (item, "exist") ? "Yes" : "No", GUILayout.Width (40));
 						GUI.color = Color.white;
-						if (!MapEx.getBool (item, "upload")) {
+						if (!isUploaded (item)) {
 							GUI.color = Color.red;
 						}
-						EditorGUILayout.TextField (MapEx.getBool (item, "upload") ? "Yes" : "No", GUILayout.Width (60));
+						EditorGUILayout.TextField (isUploaded (item) ? "Yes" : "No", GUILayout.Width (60));
 						GUI.color = Color.white;
 						if (MapEx.getBool (item, "exist")) {
 							GUI.enabled = true;
@@ -128,13 +179,18 @@ public class ECLUpgradeListProc : EditorWindow
 						if (isSelectMod) {
 							if (GUILayout.Button ("select", GUILayout.Width (60f))) {
 								Close ();
-								Utl.doCallback(onSelectedCallback, item, selectedCallbackParams);
+								Utl.doCallback (onSelectedCallback, item, selectedCallbackParams);
 							}
 						} else {
 							if (GUILayout.Button ("upload", GUILayout.Width (60f))) {
 								if (EditorUtility.DisplayDialog ("Alert", "Really want to upload the upgrade package?", "Okey", "cancel")) {
 									selectedPackageName = MapEx.getString (item, "name");
 									uploadUpgradePackage (MapEx.getString (item, "name"));
+								}	
+							}
+							if(GUILayout.Button("同步OSS", GUILayout.Width (60f))) {
+								if (EditorUtility.DisplayDialog ("Alert", "Really want to upload the upgrade package?", "Okey", "cancel")) {
+									uploadOss (MapEx.getString (item, "name"));
 								}	
 							}
 						}
@@ -153,13 +209,23 @@ public class ECLUpgradeListProc : EditorWindow
 		ECLEditorUtl.EndContents ();
 	}
 
+	public bool isUploaded (Hashtable item)
+	{
+		if (selectedServer == null) {
+			return false;
+		}
+		Hashtable m = MapEx.getMap (item, "upload");
+		return MapEx.getBool (m, selectedServer.key);
+	}
+
 	public void uploadUpgradePackage (string name)
 	{
 		if (!Utl.netIsActived ()) {
 			EditorUtility.DisplayDialog ("Alert", "The net work is not connected!", "Okay");
 			return;
-		}
-		string localDir = getUpgradePackagePath (name);
+        }
+        EditorUtility.ClearProgressBar();
+        string localDir = getUpgradePackagePath (name);
 		ThreadEx.exec (new System.Threading.ParameterizedThreadStart (doUploadUpgradePackage), localDir);
 //		doUploadUpgradePackage (localDir);
 	}
@@ -179,27 +245,83 @@ public class ECLUpgradeListProc : EditorWindow
 
 	public void doUploadUpgradePackage (object localDir)
 	{
+		if (selectedServer == null) {
+			Debug.LogError ("Please select a server!");
+			return;
+		}
 		isUploading = true;
-		if (ECLProjectManager.data.useSFTP) {
-			SFTPHelper sftp = new SFTPHelper (ECLProjectManager.data.host4UploadUpgradePackage,
-				                  ECLProjectManager.data.port4UploadUpgradePackage,
-				                  ECLProjectManager.data.ftpUser, 
-				                  ECLProjectManager.data.ftpPassword);
+		if (selectedServer.useSFTP) {
+            /*SFTPHelper sftp = new SFTPHelper (selectedServer.host4UploadUpgradePackage,
+				                  selectedServer.port4UploadUpgradePackage,
+				                  selectedServer.ftpUser, 
+				                  selectedServer.ftpPassword);
 			if (sftp.Connect ()) {
-				sftp.PutDir (localDir.ToString (), ECLProjectManager.data.RemoteBaseDir, (Callback)onSftpProgress, (Callback)onftpFinish);
+				if (selectedServer.isUploadOSSTemp) {
+					sftp.PutDir (localDir.ToString (), selectedServer.RemoteBaseDir, (Callback)onSftpProgress, null);
+					sftp.PutDir (localDir.ToString (), selectedServer.RemoteBaseDir + "_OSS", (Callback)onSftpProgress, (Callback)onftpFinish);
+				} else {
+					sftp.PutDir (localDir.ToString (), selectedServer.RemoteBaseDir, (Callback)onSftpProgress, (Callback)onftpFinish);
+				}
 				sftp.Exit ();
 				sftp = null;
 			} else {
 				Utl.doCallback ((Callback)onftpFinish, false);
-			}
-		} else {
+			}*/
+
+            RenciSFTPHelper sftp = new RenciSFTPHelper(selectedServer.host4UploadUpgradePackage,
+                                  selectedServer.ftpUser,
+                                  selectedServer.ftpPassword);
+            if (sftp.connect())
+            {
+                sftp.putDir(localDir.ToString(), selectedServer.RemoteBaseDir, (Callback)onSftpProgress, (Callback)onftpFinish);
+                sftp.disConnect();
+                sftp = null;
+            }
+            else
+            {
+                Utl.doCallback((Callback)onftpFinish, false);
+            }
+        } else {
 			bool ret = FTP.UploadDir (localDir.ToString (), 
-				           ECLProjectManager.data.host4UploadUpgradePackage, 
-				           ECLProjectManager.data.ftpUser, 
-				           ECLProjectManager.data.ftpPassword, 
-				           ECLProjectManager.data.RemoteBaseDir, false);
+				           selectedServer.host4UploadUpgradePackage, 
+				           selectedServer.ftpUser, 
+				           selectedServer.ftpPassword, 
+				           selectedServer.RemoteBaseDir, false);
+			if (selectedServer.isUploadOSSTemp && ret) {
+				ret = FTP.UploadDir (localDir.ToString (), 
+					selectedServer.host4UploadUpgradePackage, 
+					selectedServer.ftpUser, 
+					selectedServer.ftpPassword, 
+					selectedServer.RemoteBaseDir + "_OSS", false);
+			}
 			Utl.doCallback ((Callback)onftpFinish, ret);
 		}
+	}
+
+	void uploadOss (string name = null)
+	{
+		if (string.IsNullOrEmpty (selectedServer.ossCmd)) {
+			Debug.LogError ("请先设置同步脚本！");
+			return;
+		}
+		if (string.IsNullOrEmpty (name)) {
+			name = selectedPackageName;
+		}
+		string localDir = getUpgradePackagePath (name);
+		string shell = Path.Combine(Application.dataPath,  ECLEditorUtl.getPathByObject( selectedServer.ossShell));
+		string arg1 = Path.GetDirectoryName(shell);
+		string arg2 = localDir.ToString ();
+		string argss = shell + " " + arg1 + " " + arg2;
+//		Debug.LogError (argss);
+		System.Diagnostics.Process process = System.Diagnostics.Process.Start ("/bin/bash", argss);
+		//重新定向标准输入，输入，错误输出
+//		process.StartInfo.RedirectStandardInput = true;
+//		process.StartInfo.RedirectStandardOutput = true;
+//		process.StartInfo.RedirectStandardError = true;
+//
+//		string ret = process.StandardOutput.ReadToEnd ();
+//		Debug.Log (ret);
+		Debug.LogWarning("Finished===" + name);
 	}
 
 	public void setData ()
@@ -236,6 +358,9 @@ public class ECLUpgradeListProc : EditorWindow
 
 	public void updateState (string name)
 	{
+		if (selectedServer == null) {
+			return;
+		}
 		if (mList == null) {
 			return;
 		}
@@ -244,7 +369,11 @@ public class ECLUpgradeListProc : EditorWindow
 		for (int i = 0; i < mList.Count; i++) {
 			item = ListEx.getMap (mList, i);
 			if (name.Equals (MapEx.getString (item, "name"))) {
-				item ["upload"] = true;
+//				item ["upload"] = true;
+				Hashtable m = MapEx.getMap (item, "upload");
+				m = m == null ? new Hashtable () : m;
+				m [selectedServer.key] = true;
+				item ["upload"] = m;
 				break;
 			}
 		}
@@ -273,8 +402,7 @@ public class ECLUpgradeListProc : EditorWindow
 	public string getUpgradePackagePath (string name)
 	{
 		string p = Path.Combine (Application.dataPath, name);
-		if (Application.platform == RuntimePlatform.WindowsEditor)
-		{
+		if (Application.platform == RuntimePlatform.WindowsEditor) {
 			p = p.Replace ("\\", "/");
 			p = p.Replace ("//", "/");
 			p = p.Replace ("/Assets/", "/Assets4Upgrade/");
@@ -320,7 +448,7 @@ public class ECLUpgradeListProc : EditorWindow
 		window.refreshData ();
 		ECLUpgradeListProc.cfgPath = cfgPath;
 		// window.ShowPopup ();
-		window.ShowAuxWindow();
+		window.ShowAuxWindow ();
 		
 	}
 

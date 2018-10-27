@@ -5,126 +5,121 @@ do
     require("public.CLLPool")
 
     BioUtl = {}
-    local inputStreemPool;
-    local outputStreemPool;
+    local inputStreemPool
+    local outputStreemPool
 
     local isInited = false
     function BioUtl.init()
         if isInited then
             return
         end
-        isInited = true;
-        inputStreemPool = CLLPool.new(LuaB2InputStream);
-        outputStreemPool = CLLPool.new(LuaB2OutputStream);
+        isInited = true
+        inputStreemPool = CLLPool.new(LuaB2InputStream)
+        outputStreemPool = CLLPool.new(LuaB2OutputStream)
     end
 
     function BioUtl.writeObject(obj)
-        BioUtl.init();
-        --local os = LuaB2OutputStream.new();
+        BioUtl.init()
+        --local os = LuaB2OutputStream.new()
         local os = outputStreemPool:borrow()
-        local status = pcall(BioOutputStream.writeObject, os, obj);
+        local status = pcall(BioOutputStream.writeObject, os, obj)
         if status then
-            local bytes = os:toBytes();
-            os:release();
-            --os = nil;
+            local bytes = os:toBytes()
+            os:release()
+            --os = nil
             outputStreemPool:retObj(os)
-            return bytes;
+            return bytes
         else
             outputStreemPool:retObj(os)
             print(result)
-            return nil;
+            return nil
         end
     end
 
     function BioUtl.readObject(bytes)
-        BioUtl.init();
-        --local is = LuaB2InputStream.new(bytes);
-        local is = inputStreemPool:borrow();
-        is:init(bytes);
-        local status, result = pcall(BioInputStream.readObject, is);
+        if bytes == nil then
+            printe("BioUtl.readObject, the param is nil")
+            return nil
+        end
+        BioUtl.init()
+        --local is = LuaB2InputStream.new(bytes)
+        local is = inputStreemPool:borrow()
+        is:init(bytes)
+        local status, result = pcall(BioInputStream.readObject, is)
         if status then
-            is:release();
-            --is = nil;
+            is:release()
+            --is = nil
             inputStreemPool:retObj(is)
-            return result;
+            return result
         else
             inputStreemPool:retObj(is)
             print(result)
-            return nil;
+            return nil
         end
     end
 
     function BioUtl.int2bio(val)
-        BioUtl.init();
-        --local os = LuaB2OutputStream.new();
+        BioUtl.init()
+        --local os = LuaB2OutputStream.new()
         local os = outputStreemPool:borrow()
-        local status = pcall(BioOutputStream.writeInt, os, val);
+        local status = pcall(BioOutputStream.writeInt, os, val)
         if status then
-            local bytes = os:toBytes();
-            os:release();
-            --os = nil;
+            local bytes = os:toBytes()
+            os:release()
+            --os = nil
             outputStreemPool:retObj(os)
-            return bytes;
+            return bytes
         else
             outputStreemPool:retObj(os)
             print(result)
-            return nil;
+            return nil
         end
     end
 
     function BioUtl.bio2int(bytes)
-        BioUtl.init();
-        --local is = LuaB2InputStream.new(bytes);
-        local is = inputStreemPool:borrow();
-        is:init(bytes)
-        local status, result = pcall(BioInputStream.readObject, is);
-        if status then
-            is:release();
-            --is = nil;
-            inputStreemPool:retObj(is)
-            return result;
-        else
-            print(result)
-            inputStreemPool:retObj(is)
-            return 0;
+        if bytes == nil then
+            return 0
         end
+        return BioUtl.bio2number(bytes)
     end
 
     function BioUtl.long2bio(val)
-        BioUtl.init();
-        --local os = LuaB2OutputStream.new();
+        BioUtl.init()
+        --local os = LuaB2OutputStream.new()
         local os = outputStreemPool:borrow()
-        local status = pcall(BioOutputStream.writeLong, os, val);
+        local status = pcall(BioOutputStream.writeLong, os, val)
         if status then
-            local bytes = os:toBytes();
-            os:release();
-            --os = nil;
+            local bytes = os:toBytes()
+            os:release()
+            --os = nil
             outputStreemPool:retObj(os)
-            return bytes;
+            return bytes
         else
             outputStreemPool:retObj(os)
             print(result)
-            return nil;
+            return nil
         end
     end
 
     function BioUtl.bio2long(bytes)
-        BioUtl.init();
-        --local is = LuaB2InputStream.new(bytes);
-        local is = inputStreemPool:borrow();
-        is:init(bytes)
-        local status, result = pcall(BioInputStream.readObject, is);
-        if status then
-            is:release();
-            --is = nil;
-            inputStreemPool:retObj(is)
-            return result;
+        return BioUtl.bio2number(bytes)
+    end
+
+    function BioUtl.bio2number(bytes)
+        if bytes == nil then
+            return 0
+        end
+        local n = BioUtl.readObject(bytes)
+        if type(n) == "number" then
+            return n
         else
-            print(result)
-            inputStreemPool:retObj(is)
-            return 0;
+            return 0
         end
     end
+
+    function BioUtl.number2bio(n)
+        return BioUtl.writeObject(n)
+    end
     --------------------------------------------
-    return BioUtl;
+    return BioUtl
 end

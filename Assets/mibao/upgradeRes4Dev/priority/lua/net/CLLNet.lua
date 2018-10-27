@@ -12,43 +12,61 @@ do
     local subPackSize = 1 * 1024 - 1 - 50;
     local csSelf;
     local __maxLen = 1024 * 1024;
+    local baseUrlUsermgr = "http://127.0.0.1:8801/usermgr/postbio"
 
     function CLLNet.init()
         csSelf = Net.self;
     end
 
-    local httpPostBio = function(url, postData, callback)
-        WWWEx.newWWWPostBytes(CLMainBase.self,
-                Utl.urlAddTimes(url),
+    local httpPostBio = function(url, postData, callback, orgs)
+        WWWEx.postBytes(Utl.urlAddTimes(url),
                 postData,
                 CLAssetType.bytes,
-                5, 10, callback,
-                CLLNet.httpError,
-                CLLNet.httpError, nil);
+                callback,
+                CLLNet.httpError, orgs, true)
     end
 
-    local baseUrlUsermgr = "http://127.0.0.1:8801/usermgr/postbio"
-    function CLLNet.httpPostUsermgr( data)
+    function CLLNet.httpPostUsermgr(data, callback)
         local postData = BioUtl.writeObject(data)
-        httpPostBio(baseUrlUsermgr, postData, CLLNet.onResponsedUsermgr)
+        httpPostBio(baseUrlUsermgr, postData, CLLNet.onResponsedUsermgr, { callback = callback, data = data })
     end
+
 
     function CLLNet.onResponsedUsermgr(content, orgs)
+        local callback = orgs.callback
         local map = nil
         if content then
             map = BioUtl.readObject(content)
         end
         if map then
-            local dispatchInfor = NetProtoUsermgr.dispatch[map[0]]
+            local cmd = map[0]
+            local dispatchInfor = NetProtoUsermgr.dispatch[cmd]
             if dispatchInfor then
-                local data = dispatchInfor.onReceive(map);
-                CLLNet.dispatch(data)
+                local data = dispatchInfor.onReceive(map)
+                if callback then
+                    callback(data)
+                else
+                    CLLNet.dispatch(data)
+                end
             end
         end
     end
 
     function CLLNet.httpError(content, orgs)
-        --CLLNet.dispatchHttp(map)
+        local callback = orgs.callback
+        local data = orgs.data
+        local map = {}
+        local ret = {}
+        local cmd = data[0]
+        ret.code = BioUtl.number2bio(2)
+        ret.msg = "http error"
+        map.retInfor = ret
+        map.cmd = cmd
+        if callback then
+            callback(map, data)
+        else
+            CLLNet.dispatch(map)
+        end
     end
 
     local baseUrlMibao = "http://127.0.0.1:8802/mibao/postbio"

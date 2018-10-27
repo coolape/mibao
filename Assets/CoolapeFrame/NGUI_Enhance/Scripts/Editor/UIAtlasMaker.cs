@@ -199,8 +199,8 @@ public class UIAtlasMaker : EditorWindow
 		int maxSize = SystemInfo.maxTextureSize;
 #endif
 
-#if UNITY_ANDROID || UNITY_IPHONE
-		maxSize = Mathf.Min(maxSize, NGUISettings.allow4096 ? 4096 : 2048);
+#if UNITY_ANDROID || UNITY_IPHONE || UNITY_IOS
+        maxSize = Mathf.Min(maxSize, NGUISettings.allow4096 ? 4096 : 2048);
 #endif
 		if (NGUISettings.unityPacking) {
 			for (int i = 0; i < sprites.Count; ++i)
@@ -254,7 +254,11 @@ public class UIAtlasMaker : EditorWindow
 				if (NGUISettings.atlas != null && NGUISettings.atlas.isBorrowSpriteMode) {
 					texNames.Add(getTextureName(tex));//add by chenbin
 				} else {
-					texNames.Add(tex.name);
+					if(NGUISettings.addFolder2SpriteName) {
+						texNames.Add(getTextureName(tex));
+					} else {
+						texNames.Add(tex.name);
+					}
 				}
 			}
 			#endregion 
@@ -323,7 +327,13 @@ public class UIAtlasMaker : EditorWindow
 				SpriteEntry sprite = new SpriteEntry();
 				sprite.SetRect(0, 0, oldTex.width, oldTex.height);
 				sprite.tex = oldTex;
-				sprite.name = oldTex.name;
+				#region modify chenbin
+				if (NGUISettings.addFolder2SpriteName) {
+					sprite.name = getTextureName (oldTex);
+				} else {
+					sprite.name = oldTex.name;
+				}
+				#endregion
 				sprite.temporaryTexture = false;
 				list.Add(sprite);
 				continue;
@@ -377,7 +387,14 @@ public class UIAtlasMaker : EditorWindow
 				// If the dimensions match, then nothing was actually trimmed
 				if (!NGUISettings.atlasPMA && (newWidth == oldWidth && newHeight == oldHeight)) {
 					sprite.tex = oldTex;
-					sprite.name = oldTex.name;
+//					sprite.name = oldTex.name;
+					#region modify chenbin
+					if (NGUISettings.addFolder2SpriteName) {
+						sprite.name = getTextureName (oldTex);
+					} else {
+						sprite.name = oldTex.name;
+					}
+					#endregion
 					sprite.temporaryTexture = false;
 				} else {
 					// Copy the non-trimmed texture data into a temporary buffer
@@ -395,7 +412,14 @@ public class UIAtlasMaker : EditorWindow
 					}
 
 					// Create a new texture
-					sprite.name = oldTex.name;
+//					sprite.name = oldTex.name;
+					#region modify chenbin
+					if (NGUISettings.addFolder2SpriteName) {
+						sprite.name = getTextureName (oldTex);
+					} else {
+						sprite.name = oldTex.name;
+					}
+					#endregion
 					sprite.SetTexture(newPixels, newWidth, newHeight);
 
 					// Remember the padding offset
@@ -939,12 +963,20 @@ public class UIAtlasMaker : EditorWindow
 			GUILayout.EndHorizontal();
 		}
 
-#if UNITY_IPHONE || UNITY_ANDROID
-		GUILayout.BeginHorizontal();
+#if UNITY_IPHONE || UNITY_ANDROID || UNITY_IOS
+        GUILayout.BeginHorizontal();
 		NGUISettings.allow4096 = EditorGUILayout.Toggle("4096x4096", NGUISettings.allow4096, GUILayout.Width(100f));
 		GUILayout.Label("if off, limit atlases to 2048x2048");
 		GUILayout.EndHorizontal();
 #endif
+
+		#region add by chenbin
+		GUILayout.BeginHorizontal();
+		NGUISettings.addFolder2SpriteName = EditorGUILayout.Toggle("Folder add SpriteName", NGUISettings.addFolder2SpriteName, GUILayout.Width(100f));
+		GUILayout.Label("Add folder name to SpriteName");
+		GUILayout.EndHorizontal();
+		#endregion
+
 		NGUIEditorTools.EndContents();
 
 		if (NGUISettings.atlas != null) {
@@ -1039,7 +1071,7 @@ public class UIAtlasMaker : EditorWindow
 					GUILayout.Space(-1f);
 					bool highlight = (UIAtlasInspector.instance != null) && (NGUISettings.selectedSprite == iter.Key);
 					GUI.backgroundColor = highlight ? Color.white : new Color(0.8f, 0.8f, 0.8f);
-					GUILayout.BeginHorizontal("AS TextArea", GUILayout.MinHeight(20f));
+					GUILayout.BeginHorizontal(NGUIEditorTools.textArea, GUILayout.MinHeight(20f));
 					GUI.backgroundColor = Color.white;
 					GUILayout.Label(index.ToString(), GUILayout.Width(24f));
 

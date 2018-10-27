@@ -103,6 +103,7 @@ namespace Coolape
 			#if UNITY_EDITOR
 			foreach (var matInfor in materials) {
 				string matPath = "Assets/" + CLPathCfg.self.basePath + "/upgradeRes4Dev/other/Materials/" + matInfor.materialName.Replace (".", "/") + ".mat";
+				Debug.Log("matPath==" + matPath);
 				Material mat = AssetDatabase.LoadAssetAtPath (matPath, typeof(Material)) as Material;
 				if (mat == null) {
 					continue; 
@@ -286,6 +287,7 @@ namespace Coolape
 			//			public string meshName;
 			public Animator animator;
 			public string modelName;
+			public string meshName;
 
 			object finishCallback;
 			object callbackPrgs;
@@ -327,28 +329,51 @@ namespace Coolape
 				}
 				if (obj != null) {
 					if (meshFilter != null) {
-						MeshFilter mf = obj.GetComponentInChildren<MeshFilter> ();
-						if (mf != null) {
-							meshFilter.sharedMesh = mf.sharedMesh;
-							#if UNITY_EDITOR
-							if (!Application.isPlaying) {
-								EditorUtility.SetDirty (meshFilter);
+
+						MeshFilter[] mfs = obj.GetComponentsInChildren<MeshFilter>();
+						if (mfs != null && mfs.Length > 0) {
+							for (int i = 0; i < mfs.Length; i++) {
+								if (mfs [i].sharedMesh.name == meshName) {
+									meshFilter.sharedMesh = mfs [i].sharedMesh;
+
+									#if UNITY_EDITOR
+									if (!Application.isPlaying) {
+										EditorUtility.SetDirty (meshFilter);
+									}
+									#endif
+								}
 							}
-							#endif
 						}
 					}
 					if (skinnedMesh != null) {
+						
 						SkinnedMeshRenderer smr = obj.GetComponent<SkinnedMeshRenderer> ();
 						if(smr == null) {
 							smr = obj.GetComponentInChildren<SkinnedMeshRenderer> ();
-						}
-						if (smr != null) {
-							skinnedMesh.sharedMesh = smr.sharedMesh;
-							#if UNITY_EDITOR
-							if (!Application.isPlaying) {
-								EditorUtility.SetDirty (skinnedMesh);
+
+							SkinnedMeshRenderer[] smrs = obj.GetComponentsInChildren<SkinnedMeshRenderer>();
+							if (smrs != null) {
+								for (int i = 0; i < smrs.Length; i++) {
+									if (smrs [i].sharedMesh.name == meshName) {
+										skinnedMesh.sharedMesh = smr.sharedMesh;
+
+										#if UNITY_EDITOR
+										if (!Application.isPlaying) {
+											EditorUtility.SetDirty (skinnedMesh);
+										}
+										#endif
+									}
+								}
 							}
-							#endif
+						} else {
+							if (smr != null) {
+								skinnedMesh.sharedMesh = smr.sharedMesh;
+								#if UNITY_EDITOR
+								if (!Application.isPlaying) {
+									EditorUtility.SetDirty (skinnedMesh);
+								}
+								#endif
+							}
 						}
 					}
 					if (animator != null) {
@@ -411,7 +436,7 @@ namespace Coolape
 
 			void onGetMat (params object[] paras)
 			{
-				string name = paras [0].ToString ();
+                string name = paras [0].ToString ();
 				Material mat = paras [1] as Material;
 				if (index == 0) {
 					render.sharedMaterial = mat;

@@ -7,7 +7,8 @@ namespace Coolape
 {
 	public class InvokeEx : MonoBehaviour
 	{
-
+		public bool canFixedUpdate = false;
+		public bool canUpdate = false;
 		public static InvokeEx self;
 
 		public InvokeEx ()
@@ -125,10 +126,10 @@ namespace Coolape
 		public  Hashtable getCoroutines (object callbakFunc)
 		{
 			object key = getKey4InvokeMap (callbakFunc, coroutineMap);
-			if (coroutineMap [key] == null) {
-				coroutineMap [key] = new Hashtable ();
-			}
-			return (Hashtable)(coroutineMap [key]);
+            Hashtable ret = MapEx.getMap(coroutineMap, key);
+            ret = ret == null ? new Hashtable() : ret;
+            coroutineMap[key] = ret;
+            return ret;
 		}
 
 		public  void setCoroutine (object callbakFunc, UnityEngine.Coroutine ct, int index)
@@ -210,7 +211,22 @@ namespace Coolape
 		//================================================
 		// Fixed invoke 4 lua
 		//================================================
-		public long frameCounter = 0;
+		long _frameCounter = 0;
+		object locker=new object();
+
+		public long frameCounter {
+			get {
+				lock (locker) {
+					return _frameCounter;
+				}
+			}
+			set {
+				lock (locker) {
+					_frameCounter = value;
+				}
+			}
+		}
+
 		Hashtable _fixedInvokeMap = new Hashtable ();
 
 		public Hashtable fixedInvokeMap {
@@ -265,6 +281,9 @@ namespace Coolape
 			content [1] = paras;
 			funcList.Add (content);
 			fixedInvokeMap [key] = funcList;
+			if(!canFixedUpdate) {
+				canFixedUpdate = true;
+			}
 		}
 
 		public static void cancelInvokeByFixedUpdate ()
@@ -302,12 +321,18 @@ namespace Coolape
 						list.RemoveAt (i);
 					}
 				}
+
+				if(list.Count == 0) {
+					fixedInvokeMap.Remove (item);
+				}
 			}
 		}
 
 		void doFixedInvoke (long key)
 		{
 			if (fixedInvokeMap == null && fixedInvokeMap.Count <= 0)
+				return;
+			if (fixedInvokeMap [key] == null)
 				return;
 			object[] content = null;
 			List<object[]> funcList = (List<object[]>)(fixedInvokeMap [key]);
@@ -330,9 +355,14 @@ namespace Coolape
 		//帧统计
 		public virtual void FixedUpdate ()
 		{
+			if (!canFixedUpdate)
+				return;
 			frameCounter++;
 			if (fixedInvokeMap != null && fixedInvokeMap.Count > 0) {
 				doFixedInvoke (frameCounter);
+			} else {
+				canFixedUpdate = false;
+				frameCounter = 0;
 			}
 		}
 
@@ -376,10 +406,11 @@ namespace Coolape
 			if (callbakFunc == null)
 				return;
 			NewList list = ObjPool.listPool.borrowObject ();
-			list.add (callbakFunc);
-			list.add (orgs);
-			list.add (Time.unscaledTime + sec);
+			list.Add (callbakFunc);
+			list.Add (orgs);
+			list.Add (Time.unscaledTime + sec);
 			invokeByUpdateList.Add (list);
+			canUpdate = true;
 		}
 
 		public static void cancelInvokeByUpdate ()
@@ -447,8 +478,12 @@ namespace Coolape
 
 		public virtual void Update ()
 		{
+			if (!canUpdate)
+				return;
 			if (invokeByUpdateList.Count > 0) {
 				doInvokeByUpdate ();
+			} else {
+				canUpdate = false;
 			}
 		}
 	}

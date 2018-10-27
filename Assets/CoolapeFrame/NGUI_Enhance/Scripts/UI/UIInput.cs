@@ -3,7 +3,7 @@
 // Copyright © 2011-2015 Tasharen Entertainment
 //----------------------------------------------
 
-#if !UNITY_EDITOR && (UNITY_IPHONE || UNITY_ANDROID || UNITY_WP8 || UNITY_WP_8_1 || UNITY_BLACKBERRY)
+#if !UNITY_EDITOR && (UNITY_IPHONE || UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_WP_8_1 || UNITY_BLACKBERRY)
 #define MOBILE
 #endif
 
@@ -892,8 +892,12 @@ public class UIInput : MonoBehaviour
 
 		bool isMac = (
 			rp == RuntimePlatform.OSXEditor ||
-			rp == RuntimePlatform.OSXPlayer ||
-			rp == RuntimePlatform.OSXWebPlayer);
+			rp == RuntimePlatform.OSXPlayer
+	#if UNITY_2017_1_OR_NEWER
+	#else
+	|| rp == RuntimePlatform.OSXWebPlayer
+	#endif
+	);
 
 		bool ctrl = isMac ?
 			((ev.modifiers & EventModifiers.Command) != 0) :

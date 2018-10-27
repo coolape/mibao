@@ -165,7 +165,7 @@ public static class XluaGenCodeConfig
 		typeof(EffectNum),
 		typeof(EffectProgress),
 		typeof(B2Int),
-		typeof(CLUIInputRoot),
+        typeof(CLUIFormRoot),
 		typeof(EnAndDecryption),
 	};
 

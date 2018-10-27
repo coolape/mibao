@@ -58,7 +58,23 @@ namespace Coolape
 				return _luaTable;
 			}
 			set {
+                if(_luaTable != value && _luaTable != null) {
+                    destoryLua();
+                }
 				_luaTable = value;
+			}
+		}
+
+		string luaClassname = null;
+		public bool isClassLua {
+			get {
+				if (luaClassname == null) {
+					if (luaTable != null) {
+						luaClassname = luaTable ["__cname"] as string;
+					}
+					luaClassname = luaClassname == null ? "" : luaClassname;
+				}
+				return !string.IsNullOrEmpty (luaClassname);
 			}
 		}
 
@@ -82,7 +98,7 @@ namespace Coolape
 					}
 				}
 			} catch (System.Exception e) {
-				Debug.LogError (e);
+				Debug.LogError ("[" + gameObject.name + "]" + e);
 			}
 			return ret;
 		}
@@ -107,7 +123,11 @@ namespace Coolape
 				lfunc = getLuaFunction ("onNotifyLua");
 			}
 			if (lfunc != null) {
-				lfunc.Call (go, paras);
+				if (isClassLua) {
+					lfunc.Call (luaTable, go, paras);
+				} else {
+					lfunc.Call (go, paras);
+				}
 			}
 		}
 
@@ -183,7 +203,7 @@ namespace Coolape
 				setCoroutine (callbakFunc, ct, index);
 				return ct;
 			} catch (System.Exception e) {
-				Debug.LogError (callbakFunc + ":" + e);
+				Debug.LogError ("[" + gameObject.name + "]" + callbakFunc + ":" + e);
 				return null;
 			}
 		}
@@ -234,7 +254,7 @@ namespace Coolape
 			if (coroutineMap [key] == null) {
 				coroutineMap [key] = new Hashtable ();
 			}
-			return (Hashtable)(coroutineMap [key]);
+            return (coroutineMap [key]) as Hashtable;
 		}
 
 		public void setCoroutine (object callbakFunc, UnityEngine.Coroutine ct, int index)
@@ -273,17 +293,19 @@ namespace Coolape
 		public void cancelInvoke4Lua (object callbakFunc)
 		{
 			if (callbakFunc == null) {
-				#if UNITY_4_6 || UNITY_5
 				Hashtable list = null;
-
 				foreach (DictionaryEntry item in coroutineMap) {
-					list = getCoroutines ((LuaFunction)(item.Key));
+                    LuaFunction func = item.Key as LuaFunction;
+                    if(func == null) {
+                        Debug.LogError("item.Key to LuaFunction get null!");
+                        continue;
+                    }
+                    list = getCoroutines (func);
 					foreach (DictionaryEntry cell in list) {
 						StopCoroutine ((UnityEngine.Coroutine)(cell.Value));
 					}
 					list.Clear ();
 				}
-				#endif
 				if (_luaTable != null) {
 					StopCoroutine ("doInvoke4Lua");
 				}
@@ -309,9 +331,14 @@ namespace Coolape
 				}
 				if (func != null) {
 					if (!isPause) {
-						func.Call (orgs);
+						if(isClassLua) {
+							func.Call (luaTable, orgs);
+						} else {
+							func.Call (orgs);
+						}
 					} else {
-						ArrayList list = new ArrayList ();
+						//ArrayList list = new ArrayList ();
+                        NewList list = ObjPool.listPool.borrowObject();
 						list.Add (func);
 						list.Add (orgs);
 						list.Add (index);
@@ -319,7 +346,7 @@ namespace Coolape
 					}
 				}
 			} catch (System.Exception e) {
-				string msg = "call err:doInvoke4Lua" + ",callbakFunc=[" + callbakFunc + "]";
+                string msg = "[" + gameObject.name + "] call err:doInvoke4Lua" + ",callbakFunc=[" + callbakFunc + "]";
 //				CLAlert.add (msg, Color.red, -1);
 				Debug.LogError (msg);
 				Debug.LogError (e);
@@ -335,19 +362,23 @@ namespace Coolape
 		{
 			isPause = false;
 			LuaFunction f = null;
-			ArrayList invokeList = null;
+            NewList invokeList = null;
 			try {
 				while (invokeFuncs.Count > 0) {
-					invokeList = (ArrayList)(invokeFuncs.Dequeue ());
+                    invokeList = (NewList)(invokeFuncs.Dequeue ());
 					f = (LuaFunction)(invokeList [0]);
 					if (f != null) {
-						f.Call (invokeList [1]);
+						if(isClassLua) {
+							f.Call (luaTable, invokeList [1]);
+						} else {
+							f.Call (invokeList [1]);
+						}
 					}
-					invokeList.Clear ();
-					invokeList = null;
-				}
+                    ObjPool.listPool.returnObject(invokeList);
+                    invokeList = null;
+                }
 			} catch (System.Exception e) {
-				Debug.LogError (f != null ? f.ToString() : "" + "==" + e);
+                Debug.LogError ("["+gameObject.name + "]"+ f != null ? f.ToString() : "" + "==" + e);
 			}
 		}
 

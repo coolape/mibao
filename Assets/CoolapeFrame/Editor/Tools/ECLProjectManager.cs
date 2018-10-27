@@ -44,7 +44,7 @@ public class ECLProjectManager : EditorWindow
 	public const string ver4UpgradeMd5 = FrameData + "/verControl/android/ver4UpgradeMd5.v";
 	// 每次更新的状态管理
 	public const string ver4UpgradeList = FrameData + "/verControl/android/ver4UpgradeList.v";
-	#elif UNITY_IOS
+#elif UNITY_IOS
 	// 开发中的版本文件
 	public const string ver4DevelopeMd5 = FrameData + "/verControl/IOS/ver4DevelopeMd5.v";				
 	//打包时的版本
@@ -55,9 +55,9 @@ public class ECLProjectManager : EditorWindow
 	public const string ver4UpgradeMd5 = FrameData + "/verControl/IOS/ver4UpgradeMd5.v";
 	// 每次更新的状态管理
 	public const string ver4UpgradeList = FrameData + "/verControl/IOS/ver4UpgradeList.v";
-	#endif
+#endif
 
-	#if UNITY_STANDALONE
+#if UNITY_STANDALONE_WIN
 	// 开发中的版本文件
 	public const string ver4DevelopeMd5 = FrameData + "/verControl/Standalone/ver4DevelopeMd5.v";
 	//打包时的版本
@@ -68,9 +68,22 @@ public class ECLProjectManager : EditorWindow
 	public const string ver4UpgradeMd5 = FrameData + "/verControl/Standalone/ver4UpgradeMd5.v";
 	// 每次更新的状态管理
 	public const string ver4UpgradeList = FrameData + "/verControl/Standalone/ver4UpgradeList.v";
-	#endif
+#endif
 
-	const int labWidth = 200;
+#if UNITY_STANDALONE_OSX
+    // 开发中的版本文件
+    public const string ver4DevelopeMd5 = FrameData + "/verControl/StandaloneOSX/ver4DevelopeMd5.v";
+    //打包时的版本
+    public const string ver4Publish = FrameData + "/verControl/StandaloneOSX/ver4Publish.v";
+    //每次更新时的版本
+    public const string ver4Upgrade = FrameData + "/verControl/StandaloneOSX/ver4Upgrade.v";
+    //每次更新时的版本
+    public const string ver4UpgradeMd5 = FrameData + "/verControl/StandaloneOSX/ver4UpgradeMd5.v";
+    // 每次更新的状态管理
+    public const string ver4UpgradeList = FrameData + "/verControl/StandaloneOSX/ver4UpgradeList.v";
+#endif
+
+    const int labWidth = 200;
 	static bool isFinishInit = false;
 	string u3dfrom = "";
 	string u3dto = "";
@@ -439,8 +452,9 @@ public class ECLProjectManager : EditorWindow
 			if (filePath.Contains (PStr.b ().a (basePath).a ("/ui/panel").e ())
 			    || filePath.Contains (PStr.b ().a (basePath).a ("/ui/cell").e ())
 			    || filePath.Contains (PStr.b ().a (basePath).a ("/ui/other").e ())
-			    || filePath.Contains (PStr.b ().a (basePath).a ("/atlas").e ())
-			    || filePath.Contains (PStr.b ().a (basePath).a ("/font").e ())
+				|| filePath.Contains (PStr.b ().a (basePath).a ("/atlas").e ())
+				|| filePath.Contains (PStr.b ().a (basePath).a ("/font").e ())
+				|| filePath.Contains (PStr.b ().a (basePath).a ("/AnimationTexture").e ())
 			    || filePath.Contains (PStr.b ().a (basePath).a ("/localization").e ())
 			    || (!data.isLuaPackaged && filePath.Contains (PStr.b ().a (basePath).a ("/lua").e ()))) { 
 				key = filter (filePath); 
@@ -474,8 +488,9 @@ public class ECLProjectManager : EditorWindow
 			    || filePath.Contains (PStr.b ().a (basePath).a ("/ui/cell").e ())
 			    || filePath.Contains (PStr.b ().a (basePath).a ("/ui/other").e ())
 			    || filePath.Contains (PStr.b ().a (basePath).a ("/atlas").e ())
-			    || filePath.Contains (PStr.b ().a (basePath).a ("/font").e ())
-			    || filePath.Contains (PStr.b ().a (basePath).a ("/localization").e ())
+				|| filePath.Contains (PStr.b ().a (basePath).a ("/font").e ())
+				|| filePath.Contains (PStr.b ().a (basePath).a ("/localization").e ())
+				|| filePath.Contains (PStr.b ().a (basePath).a ("/AnimationTexture").e ())
 			    || (!data.isLuaPackaged && filePath.Contains (PStr.b ().a (basePath).a ("/lua").e ()))) {
 				continue;
 			}
@@ -519,23 +534,26 @@ public class ECLProjectManager : EditorWindow
 		
 		string[] dirEntries = Directory.GetDirectories (path);
 		foreach (string dir in dirEntries) {
-			//跳过不同平台的资源
-			#if UNITY_ANDROID
-			if (Path.GetFileName (dir).Equals ("IOS") || Path.GetFileName (dir).Equals ("Standalone")) {
-				continue;
-			}
-			#elif UNITY_IOS
-			if (Path.GetFileName(dir).Equals("Android") || Path.GetFileName(dir).Equals("Standalone")) {
-				Debug.Log(Path.GetFileName(dir));
-				continue;
-			}
-			#else
-			if (Path.GetFileName(dir).Equals("Android") || Path.GetFileName(dir).Equals("IOS")) {
-				Debug.Log(Path.GetFileName(dir));
-				continue;
-			}
-			#endif
-			doCreateStreamingAssets (dir, ref map);
+            //跳过不同平台的资源
+#if UNITY_ANDROID
+            if (Path.GetFileName(dir).Equals("IOS") || Path.GetFileName(dir).Equals("Standalone") || Path.GetFileName(dir).Equals("StandaloneOSX"))
+            {
+                continue;
+            }
+#elif UNITY_IOS
+            if(Path.GetFileName(dir).Equals("Android") || Path.GetFileName(dir).Equals("Standalone") || Path.GetFileName(dir).Equals("StandaloneOSX")) {
+                continue;
+            }
+#elif UNITY_STANDALONE_WIN
+            if(Path.GetFileName(dir).Equals("Android") || Path.GetFileName(dir).Equals("IOS") || Path.GetFileName(dir).Equals("StandaloneOSX")) {
+                continue;
+            }
+#elif UNITY_STANDALONE_OSX
+            if(Path.GetFileName(dir).Equals("Android") || Path.GetFileName(dir).Equals("IOS") || Path.GetFileName(dir).Equals("Standalone")) {
+                continue;
+            }
+#endif
+            doCreateStreamingAssets(dir, ref map);
 		}
 	}
 	
@@ -620,20 +638,25 @@ public class ECLProjectManager : EditorWindow
 		string[] dirEntries = Directory.GetDirectories (path);
 		foreach (string dir in dirEntries) {
 			//跳过不同平台的资源
-			#if UNITY_ANDROID
-			if (Path.GetFileName (dir).Equals ("IOS") || Path.GetFileName (dir).Equals ("Standalone")) {
-				continue;
-			}
-			#elif UNITY_IOS
-			if (Path.GetFileName(dir).Equals("Android") || Path.GetFileName(dir).Equals("Standalone")) {
-				continue;
-			}
-			#else
-			if (Path.GetFileName(dir).Equals("Android") || Path.GetFileName(dir).Equals("IOS")) {
-				continue;
-			}
-			#endif
-			cpyDir (dir, toPath + Path.GetFileName (dir) + "/");
+#if UNITY_ANDROID
+            if (Path.GetFileName(dir).Equals("IOS") || Path.GetFileName(dir).Equals("Standalone") || Path.GetFileName(dir).Equals("StandaloneOSX"))
+            {
+                continue;
+            }
+#elif UNITY_IOS
+            if(Path.GetFileName(dir).Equals("Android") || Path.GetFileName(dir).Equals("Standalone") || Path.GetFileName(dir).Equals("StandaloneOSX")) {
+                continue;
+            }
+#elif UNITY_STANDALONE_WIN
+            if(Path.GetFileName(dir).Equals("Android") || Path.GetFileName(dir).Equals("IOS") || Path.GetFileName(dir).Equals("StandaloneOSX")) {
+                continue;
+            }
+#elif UNITY_STANDALONE_OSX
+            if(Path.GetFileName(dir).Equals("Android") || Path.GetFileName(dir).Equals("IOS") || Path.GetFileName(dir).Equals("Standalone")) {
+                continue;
+            }
+#endif
+            cpyDir(dir, toPath + Path.GetFileName (dir) + "/");
 		}
 	}
 
@@ -880,6 +903,7 @@ public class ECLProjectManager : EditorWindow
 		}
 		return retVal;
 	}
+
 	/// <summary>
 	/// Refreshs all assetbundles. 根据md5来刷新资源
 	/// </summary>
@@ -887,7 +911,7 @@ public class ECLProjectManager : EditorWindow
 
 	public void onRefreshAllAssetbundles ()
 	{
-		refreshAllAssetbundles();
+		refreshAllAssetbundles ();
 	}
 
 	/// <summary>
@@ -971,6 +995,15 @@ public class ECLProjectManager : EditorWindow
 					resultPstr.a (path).a ("\n");
 					if (callCustomPublish (path)) {
 						ECLCreatAssetBundle4Update.createAssets4Upgrade ("Assets/" + path, true);
+					}
+				}
+			} else if (path.Contains ("/priority/AnimationTexture/")) {
+				if (lastPriorityVer == null || lastPriorityVer [path] == null || lastPriorityVer [path].ToString () != md5str) {
+					//do refresh asset
+					Debug.Log ("Assets/" + path);
+					resultPstr.a (path).a ("\n");
+					if (callCustomPublish (path)) {
+						ECLCreatAssetBundle4Update.createAssets4Upgrade ("Assets/" + path);
 					}
 				}
 			} else if (path.Contains ("/priority/lua/")) {
@@ -1167,7 +1200,8 @@ public class ECLProjectManager : EditorWindow
 	}
 	
 	// 更新前的准备工作
-	public void onShowPreugradeFiles() {
+	public void onShowPreugradeFiles ()
+	{
 		string path = PStr.b ().a (Application.dataPath).a ("/").a (data.name).a ("/upgradeRes4Publish").e ();
 		ECLGUIResList.show (path, (Callback)onGetFiles4Preupgrade, null);
 	}
@@ -1238,11 +1272,18 @@ public class ECLProjectManager : EditorWindow
 		// get current 
 		string tmpPath = PStr.b ().a (Application.dataPath).a ("/").a (CLPathCfg.self.basePath).a ("/upgradeRes4Ver/").a (mVerPrioriPath).e ();
 		Hashtable verPrioriMap = Utl.fileToMap (tmpPath);
+		if (verPrioriMap == null) {
+			verPrioriMap = new Hashtable ();
+		}
 		
 		tmpPath = PStr.b ().a (Application.dataPath).a ("/").a (CLPathCfg.self.basePath).a ("/upgradeRes4Ver/").a (mVerOtherPath).e ();
 		Hashtable verOtherMap = Utl.fileToMap (tmpPath);
+		if (verOtherMap == null) {
+			verOtherMap = new Hashtable ();
+		}
 		
 		Hashtable verLastUpgradeMap = fileToMap (Application.dataPath + "/" + ver4Upgrade);
+		verLastUpgradeMap = verLastUpgradeMap == null ? new Hashtable () : verLastUpgradeMap;
 		
 		bool isNeedUpgradeOther = false;
 		bool isNeedUpgradePriori = false;
@@ -1338,6 +1379,7 @@ public class ECLProjectManager : EditorWindow
 		//------------------------------------------------------------------------------
 		tmpPath = PStr.b ().a (Application.dataPath).a ("/").a (CLPathCfg.self.basePath).a ("/upgradeRes4Ver/").a (mVerverPath).e ();
 		Hashtable verVerMap = Utl.fileToMap (tmpPath);
+		verVerMap = verVerMap == null ? new Hashtable () : verVerMap;
 		if (isNeedUpgradePriori) {
 			verVerMap [mVerPrioriPath] = md5VerPriori;
 		} else {
@@ -1415,14 +1457,7 @@ public class ECLProjectManager : EditorWindow
 		//		public string hudAlertBackgroundSpriteName = "";
 		public string ingoreResWithExtensionNames = ".meta;.ds_store;.iml;.idea;.project;.buildpath;.git;.vscode";
 		public bool isLuaPackaged = true;
-		public string host4UploadUpgradePackage = "";
-		public int port4UploadUpgradePackage = 21;
-		public string ftpUser = "";
-		public string ftpPassword = "";
-		public string RemoteBaseDir = "";
-		public bool useSFTP = false;
-		public bool upgradeControledbyEachServer = false;
-
+		public ArrayList hotUpgradeServers = new ArrayList ();
 
 		UnityEngine.Object _cfgFolder;
 
@@ -1456,13 +1491,13 @@ public class ECLProjectManager : EditorWindow
 //			r ["hudAlertBackgroundSpriteName"] = hudAlertBackgroundSpriteName;
 			r ["ingoreResWithExtensionNames"] = ingoreResWithExtensionNames;
 			r ["isLuaPackaged"] = isLuaPackaged;
-			r ["host4UploadUpgradePackage"] = host4UploadUpgradePackage;
-			r ["port4UploadUpgradePackage"] = port4UploadUpgradePackage;
-			r ["ftpUser"] = ftpUser;
-			r ["ftpPassword"] = ftpPassword;
-			r ["RemoteBaseDir"] = RemoteBaseDir;
-			r ["useSFTP"] = useSFTP;
-			r ["upgradeControledbyEachServer"] = upgradeControledbyEachServer;
+			HotUpgradeServerInfor s = null;
+			ArrayList _list = new ArrayList ();
+			for (int i = 0; i < hotUpgradeServers.Count; i++) {
+				s = hotUpgradeServers [i] as HotUpgradeServerInfor;
+				_list.Add (s.ToMap ());
+			}
+			r ["hotUpgradeServers"] = _list;
 			return r;
 		}
 
@@ -1481,13 +1516,12 @@ public class ECLProjectManager : EditorWindow
 //			r.hudAlertBackgroundSpriteName = MapEx.getString (map, "hudAlertBackgroundSpriteName");
 			r.ingoreResWithExtensionNames = MapEx.getString (map, "ingoreResWithExtensionNames");
 			r.isLuaPackaged = MapEx.getBool (map, "isLuaPackaged");
-			r.host4UploadUpgradePackage = MapEx.getString (map, "host4UploadUpgradePackage");
-			r.port4UploadUpgradePackage = MapEx.getInt (map, "port4UploadUpgradePackage");
-			r.ftpUser = MapEx.getString (map, "ftpUser");
-			r.ftpPassword = MapEx.getString (map, "ftpPassword");
-			r.RemoteBaseDir = MapEx.getString (map, "RemoteBaseDir");
-			r.useSFTP = MapEx.getBool (map, "useSFTP");
-			r.upgradeControledbyEachServer = MapEx.getBool (map, "upgradeControledbyEachServer");
+
+			r.hotUpgradeServers = new ArrayList ();
+			ArrayList _list = MapEx.getList (map, "hotUpgradeServers");
+			for (int i = 0; i < _list.Count; i++) {
+				r.hotUpgradeServers.Add (HotUpgradeServerInfor.parse ((Hashtable)(_list [i])));
+			}
 			return r;
 		}
 	}

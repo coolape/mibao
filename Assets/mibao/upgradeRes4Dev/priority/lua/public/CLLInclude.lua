@@ -183,7 +183,7 @@ do
     MyCfg = CS.MyCfg;
     ReporterMessageReceiver = CS.ReporterMessageReceiver;
     MyMain = CS.MyMain
-    CLUIInputRoot = CS.CLUIInputRoot
+    CLUIFormRoot = CS.CLUIFormRoot
     -------------------------------------------------------
     -- require
     require("toolkit.LuaUtl");

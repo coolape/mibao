@@ -182,17 +182,16 @@ do
         end
 
         local onCheckNetSateFail = function(...)
-            warnMsg("Cannot connect Server or Net !!!");
+            printw("Cannot connect Server or Net !!!");
             CLLVerManager.loadPriorityVer();
             -- 后面会调用onFinish的回调
             CLLVerManager.loadOtherResVer(false);
         end
 
         local url = Utl.urlAddTimes(PStr.b():a(baseUrl):a("/netState.txt"):e());
-        WWWEx.newWWW(CLVerManager.self, url, CLAssetType.text,
-        5, 5, onCheckNetSateSuc,
-        onCheckNetSateFail,
-        onCheckNetSateFail, nil);
+        WWWEx.get(url, CLAssetType.text,
+        onCheckNetSateSuc,
+        onCheckNetSateFail, nil, true);
     end
 
 
@@ -227,11 +226,10 @@ do
             url = PStr.begin():a(baseUrl):a("/"):a(mVerverPath):e();
         end
 
-        WWWEx.newWWW(CLVerManager.self, Utl.urlAddTimes(url),
+        WWWEx.get(Utl.urlAddTimes(url),
         CLAssetType.bytes,
-        3, 5, CLLVerManager.onGetServerVerverBuff,
         CLLVerManager.onGetServerVerverBuff,
-        CLLVerManager.onGetServerVerverBuff, nil);
+        CLLVerManager.onGetServerVerverBuff, nil, true);
     end
 
     function CLLVerManager.onGetServerVerverBuff(content, orgs)
@@ -286,11 +284,9 @@ do
     -- 取得版本文件
     function CLLVerManager.getVerinfor(fPath, verVal)
         local url = PStr.b():a(baseUrl):a("/"):a(fPath):a("."):a(verVal):e(); -- 注意是加了版本号的，可以使用cdn
-        WWWEx.newWWW(CLVerManager.self,
-        url, CLAssetType.bytes,
-        3, 9, CLLVerManager.onGetVerinfor,
+        WWWEx.get(url, CLAssetType.bytes,
         CLLVerManager.onGetVerinfor,
-        CLLVerManager.onGetVerinfor, fPath);
+        CLLVerManager.onGetVerinfor, fPath, true);
     end
 
     function CLLVerManager.onGetVerinfor(content, orgs)
@@ -397,11 +393,9 @@ do
         Url = PStr.begin():a(baseUrl):a("/"):a(fPath):a("."):a(verVal):e(); -- 把版本号拼在后面
         -- print("Url==" .. Url);
 
-        WWWEx.newWWW(CLVerManager.self,
-        Url, CLAssetType.bytes,
-        3, 0, CLLVerManager.onGetPriorityFiles,
-        CLLVerManager.initFailed,
-        CLLVerManager.initFailed, fPath);
+        WWWEx.get(Url, CLAssetType.bytes,
+        CLLVerManager.onGetPriorityFiles,
+        CLLVerManager.initFailed, fPath, true);
 
         if (progressCallback ~= nil) then
             progressCallback(needUpgradeVerver.Count, progress, WWWEx.getWwwByUrl(Url));
@@ -517,7 +511,7 @@ do
         end
         CLLVerManager.loadPriorityVer();
         CLLVerManager.loadOtherResVer(false);
-        warnMsg("initFailed");
+        printw("initFailed");
     end
 
     function CLLVerManager.isHaveUpgrade(...)

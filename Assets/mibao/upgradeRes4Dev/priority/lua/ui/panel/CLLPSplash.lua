@@ -502,7 +502,7 @@ do
         formData:Add("serverid", MapEx.getString(selectedServer, "idx"))
         formData:Add("uidx", MapEx.getString(user, "idx")) -- 邮箱 （没有可以不填）	String
 
-        WWWEx.newWWW(CLVerManager.self, Utl.urlAddTimes(url),
+        WWWEx.get(CLVerManager.self, Utl.urlAddTimes(url),
         formData,
         CLAssetType.text,
         5, 10, nil,

@@ -20,6 +20,95 @@ using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System;
+using UnityEditorHelper;
+
+public class HotUpgradeServerInfor
+{
+	public string name="";
+	public string key="";
+	public string host4UploadUpgradePackage = "";
+	public int port4UploadUpgradePackage = 21;
+	public string ftpUser = "";
+	public string ftpPassword = "";
+	public string RemoteBaseDir = "";
+	public bool useSFTP = false;
+	public bool upgradeControledbyEachServer = false;
+	public string hotUpgradeBaseUrl = "";
+	public string host4Entry = "";
+	public int port4Entry = 80;
+	public string getServerListUrl = "";
+	public string setServerPkgMd5Url = "";
+	public string ossCmd = "";
+	public bool isUploadOSSTemp = false;
+
+	UnityEngine.Object _ossShell;
+
+	public UnityEngine.Object ossShell {
+		get {
+			if (_ossShell == null && !string.IsNullOrEmpty (ossCmd)) {
+				_ossShell = AssetDatabase.LoadAssetAtPath (ossCmd, 
+					typeof(UnityEngine.Object));
+			}
+			return _ossShell;
+		}
+		set {
+			_ossShell = value;
+			if (_ossShell != null) {
+				ossCmd = AssetDatabase.GetAssetPath (_ossShell.GetInstanceID ());
+			} else {
+				ossCmd = "";
+			}
+		}
+	}
+
+	public Hashtable ToMap ()
+	{
+		Hashtable r = new Hashtable ();
+		r ["name"] = name;
+		r ["key"] = Utl.MD5Encrypt (name);
+		r ["host4UploadUpgradePackage"] = host4UploadUpgradePackage;
+		r ["port4UploadUpgradePackage"] = port4UploadUpgradePackage;
+		r ["ftpUser"] = ftpUser;
+		r ["ftpPassword"] = ftpPassword;
+		r ["RemoteBaseDir"] = RemoteBaseDir;
+		r ["useSFTP"] = useSFTP;
+		r ["upgradeControledbyEachServer"] = upgradeControledbyEachServer;
+		r ["hotUpgradeBaseUrl"] = hotUpgradeBaseUrl;
+		r ["host4Entry"] = host4Entry;
+		r ["port4Entry"] = port4Entry;
+		r ["getServerListUrl"] = getServerListUrl;
+		r ["setServerPkgMd5Url"] = setServerPkgMd5Url;
+		r ["ossCmd"] = ossCmd;
+		r ["isUploadOSSTemp"] = isUploadOSSTemp;
+		return r;
+	}
+
+
+	public static HotUpgradeServerInfor parse (Hashtable map)
+	{
+		if (map == null) {
+			return null;
+		}
+		HotUpgradeServerInfor r = new HotUpgradeServerInfor ();
+		r.name = MapEx.getString (map, "name");
+		r.key = MapEx.getString (map, "key");
+		r.host4UploadUpgradePackage = MapEx.getString (map, "host4UploadUpgradePackage");
+		r.port4UploadUpgradePackage = MapEx.getInt (map, "port4UploadUpgradePackage");
+		r.ftpUser = MapEx.getString (map, "ftpUser");
+		r.ftpPassword = MapEx.getString (map, "ftpPassword");
+		r.RemoteBaseDir = MapEx.getString (map, "RemoteBaseDir");
+		r.useSFTP = MapEx.getBool (map, "useSFTP");
+		r.upgradeControledbyEachServer = MapEx.getBool (map, "upgradeControledbyEachServer");
+		r.hotUpgradeBaseUrl = MapEx.getString (map, "hotUpgradeBaseUrl");
+		r .host4Entry = MapEx.getString(map, "host4Entry");
+		r .port4Entry = MapEx.getInt(map, "port4Entry");
+		r.getServerListUrl = MapEx.getString (map, "getServerListUrl");
+		r.setServerPkgMd5Url = MapEx.getString (map, "setServerPkgMd5Url");
+		r.ossCmd = MapEx.getString (map, "ossCmd");
+		r.isUploadOSSTemp = MapEx.getBool (map, "isUploadOSSTemp");
+		return r;
+	}
+}
 
 public static class ECLProjectSetting
 {
@@ -27,11 +116,19 @@ public static class ECLProjectSetting
 	static Texture2D tabTexture;
 	static bool state1 = false;
 	static bool state2 = false;
+	static bool state3 = false;
+	static bool state4 = false;
+
 	const int labWidth = 200;
 	static bool isProcingNewProject = false;
 
 	static bool haveSetDelegate = false;
-	public static void setDelegate() {
+	static HotUpgradeServerInfor newServerInfro = new HotUpgradeServerInfor ();
+	static int selectedServerIndex = 0;
+	static bool isShowServerInfor = true;
+
+	public static void setDelegate ()
+	{
 		if (haveSetDelegate)
 			return;
 		haveSetDelegate = true;
@@ -39,7 +136,8 @@ public static class ECLProjectSetting
 		EditorApplication.update += OnUpdate;
 	}
 
-	static void OnUpdate() {
+	static void OnUpdate ()
+	{
 		if (isWaitProcing ()) {
 			finishWaitProcing ();
 			createProject2 ();
@@ -148,6 +246,10 @@ public static class ECLProjectSetting
 //				}
 
 				if (isProjectExit (manager)) {
+					if (GUILayout.Button ("Refresh", GUILayout.Height (30))) {
+						ECLProjectManager.initData ();	
+					}
+
 					if (GUILayout.Button ("Save Project Config", GUILayout.Height (30))) {
 						if (isInputDataValide ()) {
 							if (CLCfgBase.self != null) {
@@ -178,7 +280,7 @@ public static class ECLProjectSetting
 	public static void showUpgradePackageSettings ()
 	{
 		if (manager == null
-			|| !isProjectExit (manager)) {
+		    || !isProjectExit (manager)) {
 			return;
 		}
 		GUILayout.Space (5);
@@ -189,78 +291,231 @@ public static class ECLProjectSetting
 			GUI.contentColor = Color.white;
 
 			if (state2) {
-				if (CLVerManager.self != null) {
-					//===================================================
-					GUILayout.BeginHorizontal ();
-					{
-						GUILayout.Label ("Controled by Each Server:", GUILayout.Width (labWidth));
-						CLCfgBase.self.hotUpgrade4EachServer = EditorGUILayout.Toggle (CLCfgBase.self.hotUpgrade4EachServer);
-					}
-					GUILayout.EndHorizontal ();
+				GUILayout.BeginHorizontal ();
+				{
+					GUILayout.Label ("Controled by Each Server:", GUILayout.Width (labWidth));
+					CLCfgBase.self.hotUpgrade4EachServer = EditorGUILayout.Toggle (CLCfgBase.self.hotUpgrade4EachServer);
+				}
+				GUILayout.EndHorizontal ();
 
-					GUILayout.BeginHorizontal ();
-					{
-						GUILayout.Label ("Host 4 Upload Upgrade Package:", GUILayout.Width (labWidth));
-						data.host4UploadUpgradePackage = GUILayout.TextField (data.host4UploadUpgradePackage);
-					}
-					GUILayout.EndHorizontal ();
-
-					GUILayout.BeginHorizontal ();
-					{
-						GUILayout.Label ("Port 4 Upload Upgrade Package:", GUILayout.Width (labWidth));
-						data.port4UploadUpgradePackage = EditorGUILayout.IntField (data.port4UploadUpgradePackage);
-					}
-					GUILayout.EndHorizontal ();
-
-					GUILayout.BeginHorizontal ();
-					{
-						GUILayout.Label ("Ftp User:", GUILayout.Width (labWidth));
-						data.ftpUser = GUILayout.TextField (data.ftpUser);
-					}
-					GUILayout.EndHorizontal ();
-
-					GUILayout.BeginHorizontal ();
-					{
-						GUILayout.Label ("Ftp Password:", GUILayout.Width (labWidth));
-						data.ftpPassword = GUILayout.TextField (data.ftpPassword);
-					}
-					GUILayout.EndHorizontal ();
-
-					GUILayout.BeginHorizontal ();
-					{
-						GUILayout.Label ("Remote Base Dir:", GUILayout.Width (labWidth));
-						data.RemoteBaseDir = GUILayout.TextField (data.RemoteBaseDir);
-					}
-					GUILayout.EndHorizontal ();
-
-					GUILayout.BeginHorizontal ();
-					{
-						GUILayout.Label ("SFTP:", GUILayout.Width (labWidth));
-						data.useSFTP = EditorGUILayout.Toggle (data.useSFTP);
-					}
-					GUILayout.EndHorizontal ();
-
-					if (!data.useSFTP) {
-						GUILayout.BeginHorizontal ();
-						{
-							GUILayout.Label ("URI:", GUILayout.Width (labWidth));
-							GUILayout.Label ("ftp://" + data.host4UploadUpgradePackage+data.RemoteBaseDir);
+				ECLEditorUtl.BeginContents ();
+				{
+					GUI.color = Color.green;
+					state3 = NGUIEditorTools.DrawHeader ("Add Server 4 Hot Upgrade");
+					if (state3) {
+						newServerInfro = cellServerInor (newServerInfro, true);
+						if (GUILayout.Button ("Add")) {
+							if (string.IsNullOrEmpty (newServerInfro.name)) {
+								EditorUtility.DisplayDialog ("Error", "The Name is emtpy!!", "Okay");
+							} else {
+								bool activeData = true;
+								for (int i = 0; i < ECLProjectManager.data.hotUpgradeServers.Count; i++) {
+									HotUpgradeServerInfor cellServer = ECLProjectManager.data.hotUpgradeServers [i] as HotUpgradeServerInfor;
+									if (cellServer.name.Equals (newServerInfro.name)) {
+										activeData = false;
+										EditorUtility.DisplayDialog ("Error", "The Name is exsit!!", "Okay");
+										break;
+									}
+								}
+								if (activeData) {
+									ECLProjectManager.data.hotUpgradeServers.Add (newServerInfro);
+									newServerInfro.key = Utl.MD5Encrypt (newServerInfro.name);
+									ECLProjectManager.saveData ();
+									newServerInfro = new HotUpgradeServerInfor ();
+								}
+							}
 						}
-						GUILayout.EndHorizontal ();
+					}
+					GUI.color = Color.white;
+				}
+				ECLEditorUtl.EndContents ();
 
-						GUILayout.BeginHorizontal ();
-						{
-							EditorGUILayout.HelpBox (
-								"uri = \"ftp://example.com/%2F/directory\" //Go to a forward directory (cd directory)\nuri = \"ftp://example.com/%2E%2E\" //Go to the previously directory (cd ../)",
-								MessageType.Info);
+
+				ECLEditorUtl.BeginContents ();
+				{
+					state4 = NGUIEditorTools.DrawHeader ("Servers 4 Hot Upgrade");
+					if (state4 && ECLProjectManager.data.hotUpgradeServers.Count > 0) {
+						GUILayout.Space (5);
+
+						List<string> toolbarNames = new List<string> ();
+						for (int i = 0; i < ECLProjectManager.data.hotUpgradeServers.Count; i++) {
+							HotUpgradeServerInfor d = ECLProjectManager.data.hotUpgradeServers [i] as HotUpgradeServerInfor;
+							toolbarNames.Add (d.name);
 						}
-						GUILayout.EndHorizontal ();
+						selectedServerIndex = GUILayout.Toolbar (selectedServerIndex, toolbarNames.ToArray ());
+
+						HotUpgradeServerInfor hsi = ECLProjectManager.data.hotUpgradeServers [selectedServerIndex] as HotUpgradeServerInfor;
+						GUILayout.Space (-5);
+						using (new UnityEditorHelper.HighlightBox ()) {
+							cellServerInor (hsi, false);
+							//===================================================
+							GUILayout.BeginHorizontal ();
+							{
+								if (GUILayout.Button ("Apply")) {
+									if (CLVerManager.self != null) {
+										CLVerManager.self.baseUrl = hsi.hotUpgradeBaseUrl;
+										Net.self.host4Publish = hsi.host4Entry;
+										Net.self.gatePort = hsi.port4Entry;
+									}
+								}
+								if (GUILayout.Button ("Delete")) {
+									if (EditorUtility.DisplayDialog ("Alter", "Really want to delete?", "Okay", "Cancel")) {
+										ECLProjectManager.data.hotUpgradeServers.RemoveAt (selectedServerIndex);
+										selectedServerIndex = 0;
+									}
+								}
+							}
+							GUILayout.EndHorizontal ();
+						}
 					}
 				}
+				ECLEditorUtl.EndContents ();
 			}
 		}
 		ECLEditorUtl.EndContents ();
 	}
+
+	public static HotUpgradeServerInfor cellServerInor (HotUpgradeServerInfor data, bool isNew)
+	{
+//		ECLEditorUtl.BeginContents ();
+		//		{
+		//===================================================
+		if (isNew) {
+			GUILayout.BeginHorizontal ();
+			{
+				GUILayout.Label ("Name [Can not modify after saved]:", GUILayout.Width (labWidth));
+				data.name = GUILayout.TextField (data.name);
+			}
+			GUILayout.EndHorizontal ();
+		}
+		//===================================================
+		if (!isNew) {
+			GUILayout.BeginHorizontal ();
+			{
+				GUILayout.Label ("Key:", GUILayout.Width (labWidth));
+				GUILayout.TextField (data.key);
+			}
+			GUILayout.EndHorizontal ();
+		}
+		//===================================================
+		GUILayout.BeginHorizontal ();
+		{
+			GUILayout.Label ("Hot Upgrade Base Url:", GUILayout.Width (labWidth));
+			data.hotUpgradeBaseUrl = GUILayout.TextField (data.hotUpgradeBaseUrl);
+		}
+		GUILayout.EndHorizontal ();
+		//===================================================
+		GUILayout.BeginHorizontal ();
+		{
+			GUILayout.Label ("Host 4 Upload Upgrade Package:", GUILayout.Width (labWidth));
+			data.host4UploadUpgradePackage = GUILayout.TextField (data.host4UploadUpgradePackage);
+		}
+		GUILayout.EndHorizontal ();
+
+		GUILayout.BeginHorizontal ();
+		{
+			GUILayout.Label ("Port 4 Upload Upgrade Package:", GUILayout.Width (labWidth));
+			data.port4UploadUpgradePackage = EditorGUILayout.IntField (data.port4UploadUpgradePackage);
+		}
+		GUILayout.EndHorizontal ();
+
+		GUILayout.BeginHorizontal ();
+		{
+			GUILayout.Label ("Ftp User:", GUILayout.Width (labWidth));
+			data.ftpUser = GUILayout.TextField (data.ftpUser);
+		}
+		GUILayout.EndHorizontal ();
+
+		GUILayout.BeginHorizontal ();
+		{
+			GUILayout.Label ("Ftp Password:", GUILayout.Width (labWidth));
+			data.ftpPassword = GUILayout.TextField (data.ftpPassword);
+		}
+		GUILayout.EndHorizontal ();
+
+		GUILayout.BeginHorizontal ();
+		{
+			GUILayout.Label ("Remote Base Dir:", GUILayout.Width (labWidth));
+			data.RemoteBaseDir = GUILayout.TextField (data.RemoteBaseDir);
+		}
+		GUILayout.EndHorizontal ();
+
+		GUILayout.BeginHorizontal ();
+		{
+			GUILayout.Label ("SFTP:", GUILayout.Width (labWidth));
+			data.useSFTP = EditorGUILayout.Toggle (data.useSFTP);
+		}
+		GUILayout.EndHorizontal ();
+
+		if (!data.useSFTP) {
+			GUILayout.BeginHorizontal ();
+			{
+				GUILayout.Label ("URI:", GUILayout.Width (labWidth));
+				GUILayout.Label ("ftp://" + data.host4UploadUpgradePackage + data.RemoteBaseDir);
+			}
+			GUILayout.EndHorizontal ();
+
+			GUILayout.BeginHorizontal ();
+			{
+				EditorGUILayout.HelpBox (
+					"uri = \"ftp://example.com/%2F/directory\" //Go to a forward directory (cd directory)\nuri = \"ftp://example.com/%2E%2E\" //Go to the previously directory (cd ../)",
+					MessageType.Info);
+			}
+			GUILayout.EndHorizontal ();
+		}
+
+		GUILayout.BeginHorizontal ();
+		{
+			GUILayout.Label ("同步对像存储脚本:", GUILayout.Width (labWidth));
+			data.ossShell = EditorGUILayout.ObjectField (data.ossShell, 
+				typeof(UnityEngine.Object));
+		}
+		GUILayout.EndHorizontal ();
+
+		GUILayout.BeginHorizontal ();
+		{
+			GUILayout.Label ("同步对像存储临时目录:", GUILayout.Width (labWidth));
+			data.isUploadOSSTemp = EditorGUILayout.Toggle (data.isUploadOSSTemp);
+		}
+		GUILayout.EndHorizontal ();
+
+		GUILayout.Label ("入口--------------------------");
+		//===================================================
+		GUILayout.BeginHorizontal ();
+		{
+			GUILayout.Label ("Host 4 Entry:", GUILayout.Width (labWidth));
+			data.host4Entry = GUILayout.TextField (data.host4Entry);
+		}
+		GUILayout.EndHorizontal ();
+		//===================================================
+
+		GUILayout.BeginHorizontal ();
+		{
+			GUILayout.Label ("Port 4 Entry:", GUILayout.Width (labWidth));
+			data.port4Entry = EditorGUILayout.IntField (data.port4Entry);
+		}
+		GUILayout.EndHorizontal ();
+		//===================================================
+		GUILayout.BeginHorizontal ();
+		{
+			GUILayout.Label ("URL of get server list:", GUILayout.Width (labWidth));
+			data.getServerListUrl = GUILayout.TextField (data.getServerListUrl);
+		}
+		GUILayout.EndHorizontal ();
+		//===================================================
+
+		GUILayout.BeginHorizontal ();
+		{
+			GUILayout.Label ("URL of set upgrade pkg md5:", GUILayout.Width (labWidth));
+			data.setServerPkgMd5Url = GUILayout.TextField (data.setServerPkgMd5Url);
+		}
+		GUILayout.EndHorizontal ();
+		//===================================================
+//		}
+//		ECLEditorUtl.EndContents ();
+		return data;
+	}
+
 	public static void showOtherSettings ()
 	{
 		if (manager == null
@@ -280,7 +535,7 @@ public static class ECLProjectSetting
 					GUILayout.BeginHorizontal ();
 					{
 						GUILayout.Label ("Hot Upgrade Base Url:", GUILayout.Width (labWidth));
-						CLVerManager.self.baseUrl = GUILayout.TextField (CLVerManager.self.baseUrl);
+						GUILayout.TextField (CLVerManager.self.baseUrl);
 					}
 					GUILayout.EndHorizontal ();
 
@@ -619,70 +874,74 @@ public static class ECLProjectSetting
 		font = fontGo.GetComponent<UIFont> ();
 
 		//Copy Lua res
-		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/TempMainLua.lua";
-		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/CLLMainLua.lua";
-		ECLCreateFile.PubCreatNewFile2 (from, to);
+		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/luaTemplates.zip";
+		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/";
+		ZipEx.UnZip (from, to, 4096);
+//		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/TempMainLua.lua";
+//		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/CLLMainLua.lua";
+//		ECLCreateFile.PubCreatNewFile2 (from, to);
+//
+//		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/cfg/TempDBCfg.lua";
+//		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/cfg/DBCfg.lua";
+//		ECLCreateFile.PubCreatNewFile2 (from, to);
+//
+//		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/cfg/TempDBCfgTool.lua";
+//		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/cfg/DBCfgTool.lua";
+//		ECLCreateFile.PubCreatNewFile2 (from, to);
+//
+//		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/net/TempNetDispatch.lua";
+//		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/net/NetDispatch.lua";
+//		ECLCreateFile.PubCreatNewFile2 (from, to);
+//
+//		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/public/TempInclude.lua";
+//		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/public/CLLInclude.lua";
+//		ECLCreateFile.PubCreatNewFile2 (from, to);
+//
+//		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/public/TempPrefs.lua";
+//		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/public/CLLPrefs.lua";
+//		ECLCreateFile.PubCreatNewFile2 (from, to);
+//
+//		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/toolkit/TempLuaUtl.lua";
+//		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/toolkit/LuaUtl.lua";
+//		ECLCreateFile.PubCreatNewFile2 (from, to);
+//
+//		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/toolkit/TempUpdateUpgrader.lua";
+//		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/toolkit/CLLUpdateUpgrader.lua";
+//		ECLCreateFile.PubCreatNewFile2 (from, to);
+//
+//		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/toolkit/TempVerManager.lua";
+//		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/toolkit/CLLVerManager.lua";
+//		ECLCreateFile.PubCreatNewFile2 (from, to);
+//
+//		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/ui/panel/TempPBackplate.lua";
+//		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/ui/panel/CLLPBackplate.lua";
+//		ECLCreateFile.PubCreatNewFile2 (from, to);
+//
+//		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/ui/panel/TempPConfirm.lua";
+//		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/ui/panel/CLLPConfirm.lua";
+//		ECLCreateFile.PubCreatNewFile2 (from, to);
+//
+//		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/ui/panel/TempPHotWheel.lua";
+//		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/ui/panel/CLLPHotWheel.lua";
+//		ECLCreateFile.PubCreatNewFile2 (from, to);
+//
+//		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/ui/panel/TempPSplash.lua";
+//		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/ui/panel/CLLPSplash.lua";
+//		ECLCreateFile.PubCreatNewFile2 (from, to);
+//
+//		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/ui/panel/TempPStart.lua";
+//		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/ui/panel/CLLPStart.lua";
+//		ECLCreateFile.PubCreatNewFile2 (from, to);
+//
+//		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/ui/panel/TempPWWWProgress.lua";
+//		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/ui/panel/CLLPWWWProgress.lua";
+//		ECLCreateFile.PubCreatNewFile2 (from, to);
+//
+//		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/ui/cell/TempCellWWWProgress.lua";
+//		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/ui/cell/CLLCellWWWProgress.lua";
+//		ECLCreateFile.PubCreatNewFile2 (from, to);
 
-		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/cfg/TempDBCfg.lua";
-		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/cfg/DBCfg.lua";
-		ECLCreateFile.PubCreatNewFile2 (from, to);
-
-		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/cfg/TempDBCfgTool.lua";
-		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/cfg/DBCfgTool.lua";
-		ECLCreateFile.PubCreatNewFile2 (from, to);
-
-		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/net/TempNetDispatch.lua";
-		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/net/NetDispatch.lua";
-		ECLCreateFile.PubCreatNewFile2 (from, to);
-
-		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/public/TempInclude.lua";
-		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/public/CLLInclude.lua";
-		ECLCreateFile.PubCreatNewFile2 (from, to);
-
-		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/public/TempPrefs.lua";
-		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/public/CLLPrefs.lua";
-		ECLCreateFile.PubCreatNewFile2 (from, to);
-
-		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/toolkit/TempLuaUtl.lua";
-		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/toolkit/LuaUtl.lua";
-		ECLCreateFile.PubCreatNewFile2 (from, to);
-
-		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/toolkit/TempUpdateUpgrader.lua";
-		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/toolkit/CLLUpdateUpgrader.lua";
-		ECLCreateFile.PubCreatNewFile2 (from, to);
-
-		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/toolkit/TempVerManager.lua";
-		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/toolkit/CLLVerManager.lua";
-		ECLCreateFile.PubCreatNewFile2 (from, to);
-
-		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/ui/panel/TempPBackplate.lua";
-		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/ui/panel/CLLPBackplate.lua";
-		ECLCreateFile.PubCreatNewFile2 (from, to);
-
-		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/ui/panel/TempPConfirm.lua";
-		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/ui/panel/CLLPConfirm.lua";
-		ECLCreateFile.PubCreatNewFile2 (from, to);
-
-		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/ui/panel/TempPHotWheel.lua";
-		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/ui/panel/CLLPHotWheel.lua";
-		ECLCreateFile.PubCreatNewFile2 (from, to);
-
-		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/ui/panel/TempPSplash.lua";
-		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/ui/panel/CLLPSplash.lua";
-		ECLCreateFile.PubCreatNewFile2 (from, to);
-
-		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/ui/panel/TempPStart.lua";
-		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/ui/panel/CLLPStart.lua";
-		ECLCreateFile.PubCreatNewFile2 (from, to);
-
-		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/ui/panel/TempPWWWProgress.lua";
-		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/ui/panel/CLLPWWWProgress.lua";
-		ECLCreateFile.PubCreatNewFile2 (from, to);
-
-		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/Lua/ui/cell/TempCellWWWProgress.lua";
-		to = Application.dataPath + "/" + data.name + "/upgradeRes4Dev/priority/lua/ui/cell/CLLCellWWWProgress.lua";
-		ECLCreateFile.PubCreatNewFile2 (from, to);
-
+		//==================================================
 		from = Application.dataPath + "/" + ECLProjectManager.FrameName + "/Templates/hotUpgradeCfg/tempChannels.json";
 		to = Application.dataPath + "/StreamingAssets/channels.json";
 		ECLCreateFile.PubCreatNewFile2 (from, to);
@@ -723,6 +982,13 @@ public static class ECLProjectSetting
 		panelLua.luaPath = data.name + "/upgradeRes/priority/lua/ui/panel/CLLPSplash.lua";
 		PrefabUtility.CreatePrefab ("Assets/" + data.name + "/upgradeRes4Dev/priority/ui/panel/PanelSplash.prefab", panelGo);
 		//==================================================
+		panelGo = ECLEditorUtl.getObjectByPath (ECLProjectManager.FrameName + "/Templates/prefab/ui/TempLogin.prefab") as GameObject;
+		panelGo = GameObject.Instantiate (panelGo) as GameObject;
+		panelLua = panelGo.GetComponent<CLPanelLua> ();
+		panelLua.luaPath = data.name + "/upgradeRes/priority/lua/ui/panel/CLLPLogin.lua";
+		PrefabUtility.CreatePrefab ("Assets/" + data.name + "/upgradeRes4Dev/priority/ui/panel/PanelLogin.prefab", panelGo);
+		//==================================================
+
 		panelGo = ECLEditorUtl.getObjectByPath (ECLProjectManager.FrameName + "/Templates/prefab/ui/TempPanelStart.prefab") as GameObject;
 		panelGo = GameObject.Instantiate (panelGo) as GameObject;
 		panelLua = panelGo.GetComponent<CLPanelLua> ();
@@ -808,9 +1074,10 @@ public static class ECLProjectSetting
 		go.AddComponent<CLVerManager> ();
 		go.AddComponent<CLAssetsManager> ();
 		go.AddComponent<SoundEx> ();
-		go.AddComponent<InvokeEx> ();
+        go.AddComponent<InvokeEx>();
+        go.AddComponent<WWWEx>();
 
-		go = new GameObject ("Net");
+        go = new GameObject ("Net");
 		go.AddComponent<Net> ();
 
 		go = new GameObject ("Main");
@@ -917,7 +1184,7 @@ public static class ECLProjectSetting
 		sound.singletonAudio = mainGo.GetComponent<AudioSource> ();
 
 		Net net = GameObject.Find ("Net").GetComponent<Net> ();
-		net.luaPath = data.name + "/upgradeRes/priority/lua/net/NetDispatch.lua";
+		net.luaPath = data.name + "/upgradeRes/priority/lua/net/CLLNet.lua";
 
 		CLMainBase main = mainGo.GetComponent<CLMainBase> ();
 		main.firstPanel = data.companyPanelName;
@@ -979,3 +1246,4 @@ public static class ECLProjectSetting
 		}
 	}
 }
+	
