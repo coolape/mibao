@@ -21,6 +21,7 @@ do
         Screen.height * MBPMain.sizeAdjust - (_BottomHeight_ + _TopHeight_));
 
         objs.Content = getCC(transform, "PanelContent", "UIPanel")
+        objs.Content.transform.localPosition = Vector3.zero;
         objs.Content.clipOffset = Vector2.zero;
         objs.Content.baseClipRegion = MBPMain.contentRect;
         ---@type UIScrollView

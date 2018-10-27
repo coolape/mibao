@@ -90,7 +90,7 @@ public class ECLCreatAssetBundle4Update
         bundlePath = file + "/StandaloneOSX/" + obj.name + ".unity3d";
         Directory.CreateDirectory (Path.GetDirectoryName (bundlePath));
         Debug.Log ("bundlePath==" + bundlePath);
-        BuildPipeline.BuildAssetBundle (obj, null, bundlePath, opt, BuildTarget.StandaloneOSXUniversal);
+        BuildPipeline.BuildAssetBundle (obj, null, bundlePath, opt, BuildTarget.StandaloneOSX);
 #endif
         FileInfo fileInfo = new FileInfo (bundlePath);
 		long size = (fileInfo.Length / 1024);

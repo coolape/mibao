@@ -84,8 +84,8 @@ do
         loadedPanelCount = 0;
         for i = 1, count do
             CLPanelManager.getPanelAsy(
-            beforeLoadPanels[i],
-            CLLPSplash.onLoadPanelBefore);
+                    beforeLoadPanels[i],
+                    CLLPSplash.onLoadPanelBefore);
         end
 
         -- Hide company panel
@@ -397,9 +397,9 @@ do
         p:init();
         loadedPanelCount = loadedPanelCount + 1;
         if (p.name == "PanelConfirm" or
-        p.name == "PanelHotWheel" or
-        p.name == "PanelMask4Panel" or
-        p.name == "PanelWWWProgress") then
+                p.name == "PanelHotWheel" or
+                p.name == "PanelMask4Panel" or
+                p.name == "PanelWWWProgress") then
             p.transform.parent = CLUIInit.self.uiPublicRoot;
             p.transform.localScale = Vector3.one;
         end
@@ -496,19 +496,19 @@ do
         end
     end
 
-    function CLLPSplash.notifyServer()
-        local url = PStr.b():a(__httpBaseUrl):a("/KokAccount/SaveServlet"):e();
-        local formData = Hashtable();
-        formData:Add("serverid", MapEx.getString(selectedServer, "idx"))
-        formData:Add("uidx", MapEx.getString(user, "idx")) -- 邮箱 （没有可以不填）	String
-
-        WWWEx.get(CLVerManager.self, Utl.urlAddTimes(url),
-        formData,
-        CLAssetType.text,
-        5, 10, nil,
-        nil,
-        nil, nil);
-    end
+    --function CLLPSplash.notifyServer()
+    --    local url = PStr.b():a(__httpBaseUrl):a("/KokAccount/SaveServlet"):e();
+    --    local formData = Hashtable();
+    --    formData:Add("serverid", MapEx.getString(selectedServer, "idx"))
+    --    formData:Add("uidx", MapEx.getString(user, "idx")) -- 邮箱 （没有可以不填）	String
+    --
+    --    WWWEx.get(CLVerManager.self, Utl.urlAddTimes(url),
+    --            formData,
+    --            CLAssetType.text,
+    --            5, 10, nil,
+    --            nil,
+    --            nil, nil);
+    --end
 
     function CLLPSplash.goNext()
         if CLCfgBase.self.isDirectEntry then
@@ -541,35 +541,33 @@ do
     function CLLPSplash.checkNewVersion()
         local oldVer = __version__;
         local onGetVer = function(content, orgs)
-            local map = JSON.DecodeMap(content);
-            local newVer = MapEx.getString(map, "ver");
-            --print(Utl.MapToString(map));
-            --print(oldVer);
-            if (tonumber(newVer) > tonumber(oldVer)) then
-                local doUpgradeApp = function()
-                    CLLPSplash.upgradeGame(MapEx.getString(map, "url"))
-                end
-                if MapEx.getBool(map, "force") then
-                    CLUIUtl.showConfirm(LGet("UIMsg012"), true, LGet("UI057"), doUpgradeApp, "", nil);
+            if content then
+                local map = JSON.DecodeMap(content);
+                local newVer = MapEx.getString(map, "ver");
+                --print(Utl.MapToString(map));
+                --print(oldVer);
+                if (tonumber(newVer) > tonumber(oldVer)) then
+                    local doUpgradeApp = function()
+                        CLLPSplash.upgradeGame(MapEx.getString(map, "url"))
+                    end
+                    if MapEx.getBool(map, "force") then
+                        CLUIUtl.showConfirm(LGet("UIMsg012"), true, LGet("UI057"), doUpgradeApp, "", nil);
+                    else
+                        CLUIUtl.showConfirm(LGet("UIMsg012"), false, LGet("UI057"), doUpgradeApp, LGet("UI056"), CLLPSplash.updateRes);
+                    end
                 else
-                    CLUIUtl.showConfirm(LGet("UIMsg012"), false, LGet("UI057"), doUpgradeApp, LGet("UI056"), CLLPSplash.updateRes);
+                    CLLPSplash.updateRes();
                 end
-            else
-                CLLPSplash.updateRes();
             end
         end
-
-        local onGetVerError = function(msg, orgs)
+        local onGetVerErr = function()
             CLAlert.add(LGet("UIMsg013"), Color.white, 1)
             CLLPSplash.updateRes();
         end
 
         local chlCode = getChlCode();
         local url = Utl.urlAddTimes(joinStr(CLVerManager.self.baseUrl, "/appVer.", chlCode, ".json"));
-        WWWEx.newWWW(CLVerManager.self, url, CLAssetType.text,
-        5, 5, onGetVer,
-        onGetVerError,
-        onGetVerError, nil);
+        WWWEx.get(url, CLAssetType.text, onGetVer, onGetVerErr, nil, true);
     end
 
 

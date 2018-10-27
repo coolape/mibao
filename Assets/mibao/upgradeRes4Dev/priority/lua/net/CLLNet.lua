@@ -70,9 +70,9 @@ do
     end
 
     local baseUrlMibao = "http://127.0.0.1:8802/mibao/postbio"
-    function CLLNet.httpPostMibao( data)
+    function CLLNet.httpPostMibao( data, callback)
         local postData = BioUtl.writeObject(data)
-        httpPostBio(baseUrlMibao, postData, CLLNet.onResponsedMibao)
+        httpPostBio(baseUrlMibao, postData, CLLNet.onResponsedMibao, { callback = callback, data = data })
     end
 
     function CLLNet.onResponsedMibao(content, orgs)

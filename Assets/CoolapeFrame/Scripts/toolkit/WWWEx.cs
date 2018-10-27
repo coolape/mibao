@@ -24,7 +24,7 @@ namespace Coolape
         assetBundle,
     }
 
-	public class WWWEx : MonoBehaviour
+    public class WWWEx : MonoBehaviour
     {
         public static WWWEx self;
         public static Hashtable wwwMapUrl = new Hashtable();
@@ -43,7 +43,8 @@ namespace Coolape
         private void LateUpdate()
         {
             if (!isCheckWWWTimeOut) return;
-            if(Time.realtimeSinceStartup - lastCheckTimeOutTime > 0) {
+            if (Time.realtimeSinceStartup - lastCheckTimeOutTime > 0)
+            {
                 lastCheckTimeOutTime = Time.realtimeSinceStartup + 3;
                 checkWWWTimeout();
             }
@@ -51,7 +52,8 @@ namespace Coolape
             {
                 isCheckWWWTimeOut = false;
             }
-            if(wwwMapUrl.Count <= 0) {
+            if (wwwMapUrl.Count <= 0)
+            {
                 enabled = false;
             }
         }
@@ -68,54 +70,65 @@ namespace Coolape
             using (www)
             {
                 yield return www.SendWebRequest();
-                uncheckWWWTimeout(www, url);
 
-                if (www.isNetworkError || www.isHttpError)
+                try
                 {
-                    long retCode = www.responseCode;
-                    Debug.LogError(www.error + ",retCode==" + retCode + "," + url);
-                    if (retCode == 300 || retCode == 301 || retCode == 302)
+                    uncheckWWWTimeout(www, url);
+
+                    if (www.isNetworkError || www.isHttpError)
                     {
-                        // 重定向处理
-                        string url2 = www.GetResponseHeader("Location");
-                        if (string.IsNullOrEmpty(url2))
+                        long retCode = www.responseCode;
+                        Debug.LogError(www.error + ",retCode==" + retCode + "," + url);
+                        if (retCode == 300 || retCode == 301 || retCode == 302)
                         {
-                            Utl.doCallback(failedCallback, null, orgs);
+                            // 重定向处理
+                            string url2 = www.GetResponseHeader("Location");
+                            if (string.IsNullOrEmpty(url2))
+                            {
+                                Utl.doCallback(failedCallback, null, orgs);
+                            }
+                            else
+                            {
+                                if (redrectioncallback != null)
+                                {
+                                    redrectioncallback(url2);
+                                }
+                            }
                         }
                         else
                         {
-                            if (redrectioncallback != null)
-                            {
-                                redrectioncallback(url2);
-                            }
+                            Utl.doCallback(failedCallback, null, orgs);
                         }
                     }
                     else
                     {
-                        Utl.doCallback(failedCallback, null, orgs);
+                        object content = null;
+                        switch (type)
+                        {
+                            case CLAssetType.text:
+                                content = www.downloadHandler.text;
+                                break;
+                            case CLAssetType.bytes:
+                                content = www.downloadHandler.data;
+                                break;
+                            case CLAssetType.texture:
+                                content = DownloadHandlerTexture.GetContent(www);
+                                break;
+                            case CLAssetType.assetBundle:
+                                content = DownloadHandlerAssetBundle.GetContent(www);
+                                break;
+                        }
+                        Utl.doCallback(successCallback, content, orgs, www);
                     }
+
                 }
-                else
+                catch (System.Exception e)
                 {
-                    object content = null;
-                    switch (type)
-                    {
-                        case CLAssetType.text:
-                            content = www.downloadHandler.text;
-                            break;
-                        case CLAssetType.bytes:
-                            content = www.downloadHandler.data;
-                            break;
-                        case CLAssetType.texture:
-                            content = DownloadHandlerTexture.GetContent(www);
-                            break;
-                        case CLAssetType.assetBundle:
-                            content = DownloadHandlerAssetBundle.GetContent(www);
-                            break;
-                    }
-                    Utl.doCallback(successCallback, content, orgs, www);
+                    Debug.LogError(e);
+                    Utl.doCallback(failedCallback, null, orgs);
                 }
             }
+
             wwwMap4Get.Remove(url);
             wwwMapUrl.Remove(url);
 
@@ -376,11 +389,14 @@ namespace Coolape
             keys.AddRange(wwwMap4Check.Keys);
             UnityWebRequest www = null;
             NewList list = null;
-            for (int i = 0; i < keys.Count; i++) {
+            for (int i = 0; i < keys.Count; i++)
+            {
                 www = keys[i] as UnityWebRequest;
-                if(www != null) {
+                if (www != null)
+                {
                     list = wwwMap4Check[www] as NewList;
-                    if(list != null) {
+                    if (list != null)
+                    {
                         doCheckWWWTimeout(www, list);
                     }
                 }
@@ -399,7 +415,8 @@ namespace Coolape
             object orgs = list[3];
             float oldProgress = (float)(list[4]);
             float lastCheckTime = (float)(list[5]);
-            if(Time.realtimeSinceStartup - lastCheckTime < 0) {
+            if (Time.realtimeSinceStartup - lastCheckTime < 0)
+            {
                 return;
             }
             try

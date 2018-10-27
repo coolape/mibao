@@ -15,13 +15,9 @@ do
             printe("get White List error");
         end
 
-        WWWEx.newWWW(CLVerManager.self,
-        url, --Utl.urlAddTimes(url),
+        WWWEx.get(url, --Utl.urlAddTimes(url),
         CLAssetType.text,
-        5, 10,
-        KKWhiteList.onGetWhiteList,
-        loginError,
-        loginError, nil);
+        KKWhiteList.onGetWhiteList, nil, true);
     end
 
     function KKWhiteList.onGetWhiteList(content, orgs)

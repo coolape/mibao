@@ -21,6 +21,7 @@ do
         objs.InputSearchKey = getCC(objs.search.transform, "InputSearchKey", "UIInput")
 
         objs.Content = getCC(transform, "PanelList", "UIPanel")
+        objs.Content.transform.localPosition = Vector3.zero
         objs.Content.clipOffset = Vector2.zero;
         objs.Content.baseClipRegion = MBPMain.contentRect;
         ---@type UIScrollView
@@ -34,11 +35,11 @@ do
 
     -- 显示，在c#中。show为调用refresh，show和refresh的区别在于，当页面已经显示了的情况，当页面再次出现在最上层时，只会调用refresh
     function MBPPasswordSave.show()
-        isShowingSearch = false;
-        objs.search:ResetToBeginning();
-        csSelf:invoke4Lua(function()
-            objs.scrollView:ResetPosition();
-        end, 0.1);
+        --objs.search:ResetToBeginning();
+        MBPPasswordSave.hideSearch()
+        --csSelf:invoke4Lua(function()
+        --    objs.scrollView:ResetPosition();
+        --end, 0.1);
         objs.grid:setList(MBDBPassword.getData(), MBPPasswordSave.initCell);
         --objs.scrollView:ResetPosition()
     end
@@ -97,6 +98,8 @@ do
             local data = MBDBPassword.getData()
             showHotWheel()
             CLLNet.httpPostMibao(NetProtoMibao.send.syndata(data))
+        elseif goName == "ButtonUp" then
+            MBPPasswordSave.hideSearch()
         end
     end
     function MBPPasswordSave.hideSearch()
@@ -109,10 +112,12 @@ do
     function MBPPasswordSave.search(key)
         local ret = {}
         local list = MBDBPassword.getData();
-        for i = 0, list.Count - 1 do
-            if string.find(string.upper(list[i].platform), string.upper(key))
-            or string.find(string.upper(list[i].desc), string.upper(key)) then
-                table.insert(ret, list[i])
+        if list then
+            for i, v in ipairs(list) do
+                if string.find(string.upper(v.platform), string.upper(key))
+                        or string.find(string.upper(v.desc), string.upper(key)) then
+                    table.insert(ret, v)
+                end
             end
         end
 
