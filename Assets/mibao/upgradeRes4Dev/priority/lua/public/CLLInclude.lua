@@ -184,6 +184,8 @@ do
     ReporterMessageReceiver = CS.ReporterMessageReceiver;
     MyMain = CS.MyMain
     CLUIFormRoot = CS.CLUIFormRoot
+
+    Pinyin = CS.NPinyin.Pinyin
     -------------------------------------------------------
     -- require
     require("toolkit.LuaUtl");

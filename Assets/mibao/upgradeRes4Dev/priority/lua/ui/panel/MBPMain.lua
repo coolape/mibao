@@ -5,7 +5,7 @@ do
     local csSelf = nil;
     local transform = nil;
     MBPMain.sizeAdjust = 1;
-    MBPMain.contentRect = Rect.zero;
+    MBPMain.contentRect = Vector4.zero;
     local _BottomHeight_ =150
     local _TopHeight_ = 150
     local objs = {}

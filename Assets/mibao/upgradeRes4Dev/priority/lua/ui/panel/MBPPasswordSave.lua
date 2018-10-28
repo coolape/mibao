@@ -1,6 +1,6 @@
 ﻿-- xx界面
 do
-    MBPPasswordSave = {}
+    local MBPPasswordSave = {}
 
     local csSelf = nil;
     local transform = nil;
@@ -22,11 +22,15 @@ do
 
         objs.Content = getCC(transform, "PanelList", "UIPanel")
         objs.Content.transform.localPosition = Vector3.zero
-        objs.Content.clipOffset = Vector2.zero;
-        objs.Content.baseClipRegion = MBPMain.contentRect;
+        objs.Content.clipOffset = Vector2.zero
+        objs.Content.baseClipRegion = MBPMain.contentRect
         ---@type UIScrollView
         objs.scrollView = objs.Content:GetComponent("UIScrollView");
         objs.grid:setOldClip(objs.Content.clipOffset, objs.Content.transform.localPosition, objs.grid.transform.localPosition)
+
+        objs.gridIndex = getCC(transform, "Right/PanelIndexList/Grid", "UIGrid")
+        objs.gridIndex.cellHeight = NumEx.getIntPart(MBPMain.contentRect.w / 27)
+        objs.indexPrefab = getChild(objs.gridIndex.transform, "00000").gameObject
     end
 
     -- 设置数据
@@ -41,6 +45,7 @@ do
         --    objs.scrollView:ResetPosition();
         --end, 0.1);
         objs.grid:setList(MBDBPassword.getData(), MBPPasswordSave.initCell);
+        MBPPasswordSave.setIndexs()
         --objs.scrollView:ResetPosition()
     end
 
@@ -54,9 +59,39 @@ do
         getPanelAsy("PanelPasswordSaveEditor", onLoadedPanelTT, data)
     end
 
+    function MBPPasswordSave.setIndexs()
+        CLUIUtl.resetList4Lua(objs.gridIndex, objs.indexPrefab, MBDBPassword.indexList, MBPPasswordSave.initIndexCell)
+    end
+
+    function MBPPasswordSave.initIndexCell(cell, data)
+        local _d = { index = data, width = objs.gridIndex.cellWidth, height = objs.gridIndex.cellHeight }
+        cell:init(_d, MBPPasswordSave.onClickIndexCell)
+    end
+
+    function MBPPasswordSave.onClickIndexCell(cell)
+        local d = cell.luaTable.getData()
+        local index = d.index
+        local pos = MBDBPassword.getPosByChar(index)
+        if (pos >= 0) then
+            local orgList = MBDBPassword.getData()
+            local listPart1 = {};
+            for i = pos, #orgList do
+                table.insert(listPart1, orgList[i]);
+            end
+            objs.grid:setList(listPart1, MBPPasswordSave.initCell)
+
+            local listPart2 = {}
+            for i = 1, pos - 1 do
+                table.insert(listPart2, orgList[i])
+            end
+            objs.grid:insertList(listPart2)
+        end
+    end
+
     -- 刷新
     function MBPPasswordSave.refresh()
-        objs.grid:refreshContentOnly(MBDBPassword.getData());
+        --objs.grid:refreshContentOnly(MBDBPassword.getData());
+        objs.grid:refreshContentOnly()
     end
 
     -- 关闭页面

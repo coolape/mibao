@@ -16,7 +16,7 @@ public class MyMain : CLMainBase
 			AndroidStatusBar.statusBarState = statesBar;
 			AndroidStatusBar.dimmed = !statusBar;
 		}
-	}
+    }
 
 	public override void doOffline ()
 	{

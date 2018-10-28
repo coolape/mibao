@@ -12,21 +12,61 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="CLLPSplash.lua" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/ui/panel/CLLPSplash.lua">
+      <file leaf-file-name="MBPPasswordSave.lua" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSave.lua">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="483">
-              <caret line="569" column="75" lean-forward="false" selection-start-line="569" selection-start-column="75" selection-end-line="569" selection-end-column="75" />
+            <state relative-caret-position="236">
+              <caret line="73" column="45" lean-forward="false" selection-start-line="73" selection-start-column="45" selection-end-line="73" selection-end-column="45" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MBPPasswordSave.lua" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSave.lua">
+      <file leaf-file-name="MBCellPassword.lua" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/ui/cell/MBCellPassword.lua">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="216">
-              <caret line="38" column="36" lean-forward="false" selection-start-line="38" selection-start-column="36" selection-end-line="38" selection-end-column="36" />
+            <state relative-caret-position="394">
+              <caret line="30" column="32" lean-forward="false" selection-start-line="30" selection-start-column="27" selection-end-line="30" selection-end-column="32" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MBCellIndex.lua" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/ui/cell/MBCellIndex.lua">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="444">
+              <caret line="39" column="12" lean-forward="true" selection-start-line="39" selection-start-column="12" selection-end-line="39" selection-end-column="12" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CLLMainLua.lua" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/CLLMainLua.lua">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="439">
+              <caret line="185" column="0" lean-forward="false" selection-start-line="185" selection-start-column="0" selection-end-line="185" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CLLInclude.lua" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/public/CLLInclude.lua">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="421">
+              <caret line="187" column="13" lean-forward="true" selection-start-line="187" selection-start-column="13" selection-end-line="187" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LuaUtl.lua" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/toolkit/LuaUtl.lua">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="226">
+              <caret line="321" column="35" lean-forward="false" selection-start-line="321" selection-start-column="32" selection-end-line="321" selection-end-column="35" />
               <folding />
             </state>
           </provider>
@@ -42,21 +82,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CLLNet.lua" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/net/CLLNet.lua">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
-              <caret line="72" column="49" lean-forward="false" selection-start-line="72" selection-start-column="49" selection-end-line="72" selection-end-column="49" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="MBDBPassword.lua" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/db/MBDBPassword.lua">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="355">
-              <caret line="40" column="26" lean-forward="false" selection-start-line="40" selection-start-column="26" selection-end-line="40" selection-end-column="26" />
+            <state relative-caret-position="-717">
+              <caret line="43" column="54" lean-forward="false" selection-start-line="43" selection-start-column="54" selection-end-line="43" selection-end-column="54" />
               <folding />
             </state>
           </provider>
@@ -75,18 +105,8 @@
       <file leaf-file-name="MBPMain.lua" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/ui/panel/MBPMain.lua">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="247">
-              <caret line="23" column="54" lean-forward="false" selection-start-line="23" selection-start-column="54" selection-end-line="23" selection-end-column="54" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="KKWhiteList.lua" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/toolkit/KKWhiteList.lua">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="208">
-              <caret line="17" column="17" lean-forward="false" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="17" />
+            <state relative-caret-position="119">
+              <caret line="7" column="33" lean-forward="false" selection-start-line="7" selection-start-column="33" selection-end-line="7" selection-end-column="33" />
               <folding />
             </state>
           </provider>
@@ -102,7 +122,12 @@
       <find>WWWEx.get</find>
       <find>objs.search:Play</find>
       <find>MBPPasswordSave.hideSearch</find>
+      <find>MBPPasswordSave</find>
       <find>isShowingSearch</find>
+      <find>height</find>
+      <find>platform</find>
+      <find>sub</find>
+      <find>MBDBPassword.getVal</find>
     </findStrings>
   </component>
   <component name="GradleLocalSettings">
@@ -117,6 +142,10 @@
         <option value="$PROJECT_DIR$/upgradeRes4Dev/priority/lua/ui/panel/CLLPSplash.lua" />
         <option value="$PROJECT_DIR$/upgradeRes4Dev/priority/lua/net/CLLNet.lua" />
         <option value="$PROJECT_DIR$/upgradeRes4Dev/priority/lua/ui/panel/MBPMain.lua" />
+        <option value="$PROJECT_DIR$/upgradeRes4Dev/priority/lua/ui/cell/MBCellIndex.lua" />
+        <option value="$PROJECT_DIR$/upgradeRes4Dev/priority/lua/public/CLLInclude.lua" />
+        <option value="$PROJECT_DIR$/upgradeRes4Dev/priority/lua/CLLMainLua.lua" />
+        <option value="$PROJECT_DIR$/upgradeRes4Dev/priority/lua/db/MBDBPassword.lua" />
         <option value="$PROJECT_DIR$/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSave.lua" />
       </list>
     </option>
@@ -191,7 +220,32 @@
               <item name="upgradeRes4Dev" type="462c0819:PsiDirectoryNode" />
               <item name="priority" type="462c0819:PsiDirectoryNode" />
               <item name="lua" type="462c0819:PsiDirectoryNode" />
+              <item name="public" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="mibao" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mibao" type="462c0819:PsiDirectoryNode" />
+              <item name="upgradeRes4Dev" type="462c0819:PsiDirectoryNode" />
+              <item name="priority" type="462c0819:PsiDirectoryNode" />
+              <item name="lua" type="462c0819:PsiDirectoryNode" />
+              <item name="toolkit" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="mibao" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mibao" type="462c0819:PsiDirectoryNode" />
+              <item name="upgradeRes4Dev" type="462c0819:PsiDirectoryNode" />
+              <item name="priority" type="462c0819:PsiDirectoryNode" />
+              <item name="lua" type="462c0819:PsiDirectoryNode" />
               <item name="ui" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="mibao" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mibao" type="462c0819:PsiDirectoryNode" />
+              <item name="upgradeRes4Dev" type="462c0819:PsiDirectoryNode" />
+              <item name="priority" type="462c0819:PsiDirectoryNode" />
+              <item name="lua" type="462c0819:PsiDirectoryNode" />
+              <item name="ui" type="462c0819:PsiDirectoryNode" />
+              <item name="cell" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="mibao" type="b2602c69:ProjectViewProjectNode" />
@@ -321,12 +375,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1540640875279</updated>
-      <workItem from="1540640881303" duration="4746000" />
+      <workItem from="1540640881303" duration="14080000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="4746000" />
+    <option name="totallyTimeSpent" value="14080000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="23" width="1215" height="745" extended-state="0" />
@@ -396,14 +450,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/ui/panel/MBPMain.lua">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="23" column="54" lean-forward="false" selection-start-line="23" selection-start-column="54" selection-end-line="23" selection-end-column="54" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/bio/BioUtl.lua">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="351">
@@ -420,18 +466,66 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/ui/panel/MBPMain.lua">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="33" lean-forward="false" selection-start-line="7" selection-start-column="33" selection-end-line="7" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/ui/cell/MBCellIndex.lua">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="444">
+          <caret line="39" column="12" lean-forward="true" selection-start-line="39" selection-start-column="12" selection-end-line="39" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/public/CLLInclude.lua">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="421">
+          <caret line="187" column="13" lean-forward="true" selection-start-line="187" selection-start-column="13" selection-end-line="187" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/ui/cell/MBCellPassword.lua">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="394">
+          <caret line="30" column="32" lean-forward="false" selection-start-line="30" selection-start-column="27" selection-end-line="30" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/toolkit/LuaUtl.lua">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="321" column="35" lean-forward="false" selection-start-line="321" selection-start-column="32" selection-end-line="321" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/CLLMainLua.lua">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="439">
+          <caret line="185" column="0" lean-forward="false" selection-start-line="185" selection-start-column="0" selection-end-line="185" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/db/MBDBPassword.lua">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="355">
-          <caret line="40" column="26" lean-forward="false" selection-start-line="40" selection-start-column="26" selection-end-line="40" selection-end-column="26" />
+        <state relative-caret-position="-717">
+          <caret line="43" column="54" lean-forward="false" selection-start-line="43" selection-start-column="54" selection-end-line="43" selection-end-column="54" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/upgradeRes4Dev/priority/lua/ui/panel/MBPPasswordSave.lua">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="38" column="36" lean-forward="false" selection-start-line="38" selection-start-column="36" selection-end-line="38" selection-end-column="36" />
+        <state relative-caret-position="236">
+          <caret line="73" column="45" lean-forward="false" selection-start-line="73" selection-start-column="45" selection-end-line="73" selection-end-column="45" />
           <folding />
         </state>
       </provider>
