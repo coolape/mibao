@@ -1,10 +1,10 @@
 ﻿do
     require("bio.BioUtl")
     MBDBPassword = {}
-    local path = "";
+    local path = ""
     ---@type System.Collections.ArrayList
-    local mData = nil;
-    MBDBPassword.indexList = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "#" };
+    local mData = nil
+    MBDBPassword.indexList = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "#" }
     MBDBPassword.indexMap = {}
     for i, v in ipairs(MBDBPassword.indexList) do
         MBDBPassword.indexMap[v] = i
@@ -28,11 +28,11 @@
     end
 
     function MBDBPassword.init()
-        path = Utl.chgToSDCard(joinStr(Application.persistentDataPath, "/coolape/mibao/", "mm_", __uid__, "_", "psdSave.d"));
+        path = Utl.chgToSDCard(joinStr(Application.persistentDataPath, "/coolape/mibao/", "mm_", __uid__, "_", "psdSave.d"))
         if mData ~= nil then
             return
         end
-        local bytes = FileEx.ReadAllBytes(path);
+        local bytes = FileEx.ReadAllBytes(path)
         if bytes then
             mData = BioUtl.readObject(bytes)
         end
@@ -48,20 +48,20 @@
     end
 
     function MBDBPassword.clean()
-        mData = nil;
+        mData = nil
     end
 
     function MBDBPassword.save()
         if mData == nil then
             return
         end
-        FileEx.CreateDirectory(Path.GetDirectoryName(path));
+        FileEx.CreateDirectory(Path.GetDirectoryName(path))
         FileEx.WriteAllBytes(path, BioUtl.writeObject(mData))
     end
 
     function MBDBPassword.getData()
-        MBDBPassword.init();
-        return mData;
+        MBDBPassword.init()
+        return mData
     end
 
     function MBDBPassword.getDataWithCharIndex()
@@ -69,11 +69,17 @@
         local ret = {}
         local pos = 1
         local indexVal
+        local firstFound = false
         for i, v in ipairs(MBDBPassword.indexList) do
             indexVal = MBDBPassword.getValByChar(v)
-            table.insert(ret, { platform = v, isIndex = true, pyKey = v, indexVal= indexVal})
+            --table.insert(ret, { platform = v, isIndex = true, pyKey = v, indexVal= indexVal})
+            firstFound = true
             for j = pos, #list do
                 if list[j].indexVal == indexVal then
+                    if firstFound then
+                        table.insert(ret, { platform = v, isIndex = true, pyKey = v, indexVal= indexVal})
+                        firstFound = false
+                    end
                     table.insert(ret, list[j])
                 else
                     pos = j
@@ -86,40 +92,46 @@
 
     function MBDBPassword.setData(d)
         mData = d
-        MBDBPassword.wrapData()
+        MBDBPassword.sort()
         MBDBPassword.save()
     end
 
     function MBDBPassword.addOrUpdate(data)
         MBDBPassword.init()
-        data.time = DateEx.nowMS;
+        data.time = DateEx.nowMS
+        data.py = Pinyin.GetInitials(data.platform)
+        data.pyKey = data.py:sub(1, 1)
+        data.indexVal = MBDBPassword.getValByChar(data.pyKey)
+
         local isUpgrade = false
         for i, v in ipairs(mData) do
             if v.platform == data.platform then
-                mData[i] = data;
-                isUpgrade = true;
-                break ;
+                mData[i] = data
+                isUpgrade = true
+                break 
             end
         end
         if not isUpgrade then
             table.insert(mData, data)
         end
-        MBDBPassword.save();
+        MBDBPassword.sort()
+        MBDBPassword.save()
     end
 
     function MBDBPassword.remove(key, user)
         if isNilOrEmpty(key) then
-            return ;
+            return
         end
 
-        MBDBPassword.init();
+        MBDBPassword.init()
         for i, v in ipairs(mData) do
             if v.platform == key and v.user == user then
                 table.remove(mData, i)
                 break
             end
         end
-        MBDBPassword.save();
+        MBDBPassword.sort()
+        MBDBPassword.save()
     end
 
     function MBDBPassword.sort()
@@ -133,5 +145,5 @@
         )
     end
     --------------------------------------------
-    return MBDBPassword;
+    return MBDBPassword
 end

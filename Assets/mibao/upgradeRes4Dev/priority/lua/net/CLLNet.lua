@@ -232,6 +232,7 @@ do
         if (succ ~= 1) then
             retInfor.msg = Localization.Get("Error_" .. succ);
             CLAlert.add(msg, Color.red, 1);
+            hideHotWheel()
         else
             -- success
             CLLNet.cacheData(cmd, map);

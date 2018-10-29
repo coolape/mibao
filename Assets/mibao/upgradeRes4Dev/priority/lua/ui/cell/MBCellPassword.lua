@@ -36,7 +36,7 @@ do
             SetActive(objs.content.gameObject, false)
             SetActive(objs.LabelIndex.gameObject, true)
             objs.bg.height = 100
-            objs.bg.color = ColorEx.getColor(233,233,233)
+            objs.bg.color = ColorEx.getColor(233, 233, 233)
             isShowingPsd = false
             objs.LabelIndex.text = mData.platform
         else
@@ -70,12 +70,13 @@ do
         local goName = go.name;
         if goName == "ButtonPssword" then
             if not isShowingPsd then
-                getPanelAsy("PanelSecretKey", onLoadedPanelTT, { cmd = "get",
-                                                                 callback = function(key)
-                                                                     isShowingPsd = true;
-                                                                     objs.LabelPassword.text = EnAndDecryption.decoder(MapEx.getString(mData, "psd"), key);
-                                                                     csSelf:invoke4Lua(_cell.hidePassword, 3);
-                                                                 end })
+                getPanelAsy("PanelSecretKey", onLoadedPanelTT,
+                        { cmd = "get",
+                          callback = function(key)
+                              isShowingPsd = true;
+                              objs.LabelPassword.text = EnAndDecryption.decoder(MapEx.getString(mData, "psd"), key);
+                              csSelf:invoke4Lua(_cell.hidePassword, 3);
+                          end })
             else
                 _cell.hidePassword();
             end

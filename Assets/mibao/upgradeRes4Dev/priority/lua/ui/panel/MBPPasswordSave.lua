@@ -2,20 +2,21 @@
 do
     local MBPPasswordSave = {}
 
-    local csSelf = nil;
-    local transform = nil;
+    local csSelf = nil
+    local transform = nil
     local objs = {}
-    local isShowingSearch = false;
+    local isShowingSearch = false
 
     -- 初始化，只会调用一次
     function MBPPasswordSave.init(csObj)
-        csSelf = csObj;
-        transform = csObj.transform;
+        csSelf = csObj
+        transform = csObj.transform
         --[[
-        上的组件：getChild(transform, "offset", "Progress BarHong"):GetComponent("UISlider");
+        上的组件：getChild(transform, "offset", "Progress BarHong"):GetComponent("UISlider")
         --]]
         ---@type Coolape.CLUILoopGrid
         objs.grid = getCC(transform, "PanelList/Grid", "CLUILoopTable")
+        objs.table = objs.grid:GetComponent("UITable")
         ---@type TweenPosition
         objs.search = getCC(transform, "AnchorTop/search", "TweenPosition")
         objs.InputSearchKey = getCC(objs.search.transform, "InputSearchKey", "UIInput")
@@ -25,7 +26,7 @@ do
         objs.Content.clipOffset = Vector2.zero
         objs.Content.baseClipRegion = MBPMain.contentRect
         ---@type UIScrollView
-        objs.scrollView = objs.Content:GetComponent("UIScrollView");
+        objs.scrollView = objs.Content:GetComponent("UIScrollView")
         objs.grid:setOldClip(objs.Content.clipOffset, objs.Content.transform.localPosition, objs.grid.transform.localPosition)
 
         objs.gridIndex = getCC(transform, "Right/PanelIndexList/Grid", "UIGrid")
@@ -39,23 +40,26 @@ do
 
     -- 显示，在c#中。show为调用refresh，show和refresh的区别在于，当页面已经显示了的情况，当页面再次出现在最上层时，只会调用refresh
     function MBPPasswordSave.show()
-        --objs.search:ResetToBeginning();
+        --objs.search:ResetToBeginning()
         MBPPasswordSave.hideSearch()
         --csSelf:invoke4Lua(function()
-        --    objs.scrollView:ResetPosition();
-        --end, 0.1);
+        --    objs.scrollView:ResetPosition()
+        --end, 0.1)
         MBPPasswordSave.showList({})
         MBPPasswordSave.setIndexs()
         --objs.scrollView:ResetPosition()
     end
 
     function MBPPasswordSave.initCell(cell, data)
-        cell:init(data, MBPPasswordSave.onClickCell);
+        cell:init(data, MBPPasswordSave.onClickCell)
     end
 
     function MBPPasswordSave.onClickCell(cell)
         MBPPasswordSave.hideSearch()
-        local data = cell.luaTable.getData();
+        local data = cell.luaTable.getData()
+        if data.isIndex then
+            return
+        end
         getPanelAsy("PanelPasswordSaveEditor", onLoadedPanelTT, data)
     end
 
@@ -70,16 +74,13 @@ do
 
     function MBPPasswordSave.onClickIndexCell(cell)
         local d = cell.luaTable.getData()
-        if d.isIndex then
-            return
-        end
         local index = d.index
         local pos = MBDBPassword.getPosByChar(index)
         if (pos >= 0) then
             local orgList = MBDBPassword.getDataWithCharIndex()
-            local listPart1 = {};
+            local listPart1 = {}
             for i = pos, #orgList do
-                table.insert(listPart1, orgList[i]);
+                table.insert(listPart1, orgList[i])
             end
             objs.grid:setList(listPart1, MBPPasswordSave.initCell)
 
@@ -93,12 +94,12 @@ do
 
     -- 刷新
     function MBPPasswordSave.refresh()
-        objs.grid:refreshContentOnly(MBDBPassword.getDataWithCharIndex())
+        objs.grid:refreshContentOnly(MBDBPassword.getDataWithCharIndex(), true)
     end
 
     function MBPPasswordSave.showList(list)
         list = list or MBDBPassword.getDataWithCharIndex()
-        objs.grid:setList(list, MBPPasswordSave.initCell);
+        objs.grid:setList(list, MBPPasswordSave.initCell)
     end
     -- 关闭页面
     function MBPPasswordSave.hide()
@@ -109,22 +110,22 @@ do
         if (succ == 1) then
             if (cmd == NetProtoMibao.cmds.syndata) then
                 hideHotWheel()
-                MBDBPassword.setData(datas.newData);
+                MBDBPassword.setData(datas.newData)
                 MBPPasswordSave.refresh()
-                CLAlert.add("success");
+                CLAlert.add("success")
             end
         end
     end
 
     -- 处理ui上的事件，例如点击等
     function MBPPasswordSave.uiEventDelegate( go )
-        local goName = go.name;
+        local goName = go.name
         if (goName == "ButtonBack") then
-            hideTopPanel();
+            hideTopPanel()
         elseif (goName == "ButtonAdd") then
             getPanelAsy("PanelPasswordSaveEditor", onLoadedPanelTT, nil)
         elseif goName == "ButtonSearch" then
-            isShowingSearch = not isShowingSearch;
+            isShowingSearch = not isShowingSearch
             objs.search:Play(isShowingSearch)
         elseif goName == "InputSearchKey" then
             objs.InputSearchKey.value = trim(objs.InputSearchKey.value)
@@ -145,34 +146,34 @@ do
     end
     function MBPPasswordSave.hideSearch()
         if isShowingSearch then
-            isShowingSearch = false;
+            isShowingSearch = false
             objs.search:Play(isShowingSearch)
         end
     end
 
     function MBPPasswordSave.search(key)
         local ret = {}
-        local list = MBDBPassword.getDataWithCharIndex();
+        local list = MBDBPassword.getDataWithCharIndex()
         if list then
             for i, v in ipairs(list) do
-                if  string.find(string.upper(v.platform), string.upper(key))
-                        or string.find(string.upper(v.desc), string.upper(key)) then
+                if (v.platform and string.find(string.upper(v.platform), string.upper(key)))
+                        or (v.desc and string.find(string.upper(v.desc), string.upper(key))) then
                     table.insert(ret, v)
                 end
             end
         end
 
         if #ret == 0 then
-            CLAlert.add("无数据");
+            CLAlert.add("无数据")
         end
-        objs.grid:setList(ret, MBPPasswordSave.initCell);
+        objs.grid:setList(ret, MBPPasswordSave.initCell)
     end
 
     -- 当按了返回键时，关闭自己（返值为true时关闭）
     function MBPPasswordSave.hideSelfOnKeyBack( )
-        return true;
+        return true
     end
 
     --------------------------------------------
-    return MBPPasswordSave;
+    return MBPPasswordSave
 end
