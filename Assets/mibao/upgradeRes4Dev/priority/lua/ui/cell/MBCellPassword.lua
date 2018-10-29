@@ -17,23 +17,41 @@ do
         --]]
         ---@type CLUIFormRoot
         objs.root = csSelf:GetComponent("CLUIFormRoot");
-        objs.LabelPlatform = getCC(transform, "LabelPlatform", "UILabel")
-        objs.LabelDesc = getCC(transform, "LabelDesc", "UILabel")
-        objs.LabelUser = getCC(transform, "LabelUser", "UILabel")
-        objs.LabelPassword = getCC(transform, "ButtonPssword/LabelPassword", "UILabel")
+        objs.bg = csSelf:GetComponent("UISprite")
+        objs.content = getChild(transform, "content")
+        objs.LabelPlatform = getCC(objs.content, "LabelPlatform", "UILabel")
+        objs.LabelDesc = getCC(objs.content, "LabelDesc", "UILabel")
+        objs.LabelUser = getCC(objs.content, "LabelUser", "UILabel")
+        objs.LabelPassword = getCC(objs.content, "ButtonPssword/LabelPassword", "UILabel")
+
+        objs.LabelIndex = getCC(transform, "LabelIndex", "UILabel")
     end
 
     -- 显示，
     -- 注意，c#侧不会在调用show时，调用refresh
-    function _cell.show ( go, data )
-        mData = data;
-        isShowingPsd = false;
-        objs.root:setValue(mData)
-        objs.LabelPassword.text = btnTxt;
+    function _cell.show (go, data)
+        mData = data
+
+        if mData.isIndex then
+            SetActive(objs.content.gameObject, false)
+            SetActive(objs.LabelIndex.gameObject, true)
+            objs.bg.height = 100
+            objs.bg.color = ColorEx.getColor(233,233,233)
+            isShowingPsd = false
+            objs.LabelIndex.text = mData.platform
+        else
+            SetActive(objs.content.gameObject, true)
+            SetActive(objs.LabelIndex.gameObject, false)
+            objs.bg.height = 250
+            objs.bg.color = Color.white
+            isShowingPsd = false
+            objs.root:setValue(mData)
+            objs.LabelPassword.text = btnTxt
+        end
     end
 
     -- 注意，c#侧不会在调用show时，调用refresh
-    function _cell.refresh( paras )
+    function _cell.refresh(paras)
         --[[
         if(paras == 1) then   -- 刷新血
           -- TODO:
@@ -44,7 +62,7 @@ do
     end
 
     -- 取得数据
-    function _cell.getData ( )
+    function _cell.getData ()
         return mData;
     end
 
@@ -53,11 +71,11 @@ do
         if goName == "ButtonPssword" then
             if not isShowingPsd then
                 getPanelAsy("PanelSecretKey", onLoadedPanelTT, { cmd = "get",
-                    callback = function(key)
-                        isShowingPsd = true;
-                        objs.LabelPassword.text = EnAndDecryption.decoder(MapEx.getString(mData, "psd"), key);
-                        csSelf:invoke4Lua(_cell.hidePassword, 3);
-                    end })
+                                                                 callback = function(key)
+                                                                     isShowingPsd = true;
+                                                                     objs.LabelPassword.text = EnAndDecryption.decoder(MapEx.getString(mData, "psd"), key);
+                                                                     csSelf:invoke4Lua(_cell.hidePassword, 3);
+                                                                 end })
             else
                 _cell.hidePassword();
             end

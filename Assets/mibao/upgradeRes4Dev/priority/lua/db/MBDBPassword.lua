@@ -16,8 +16,8 @@
 
     function MBDBPassword.getPosByChar(Char)
         local indexVal = MBDBPassword.getValByChar(Char)
-        if mData == nil then return 0 end
-        for i,v in ipairs(mData) do
+        local list = MBDBPassword.getDataWithCharIndex()
+        for i, v in ipairs(list) do
             if MBDBPassword.getValByChar(v.pyKey) == indexVal then
                 return i
             elseif MBDBPassword.getValByChar(v.pyKey) > indexVal then
@@ -55,12 +55,33 @@
         if mData == nil then
             return
         end
+        FileEx.CreateDirectory(Path.GetDirectoryName(path));
         FileEx.WriteAllBytes(path, BioUtl.writeObject(mData))
     end
 
     function MBDBPassword.getData()
         MBDBPassword.init();
         return mData;
+    end
+
+    function MBDBPassword.getDataWithCharIndex()
+        local list = MBDBPassword.getData()
+        local ret = {}
+        local pos = 1
+        local indexVal
+        for i, v in ipairs(MBDBPassword.indexList) do
+            indexVal = MBDBPassword.getValByChar(v)
+            table.insert(ret, { platform = v, isIndex = true, pyKey = v, indexVal= indexVal})
+            for j = pos, #list do
+                if list[j].indexVal == indexVal then
+                    table.insert(ret, list[j])
+                else
+                    pos = j
+                    break
+                end
+            end
+        end
+        return ret
     end
 
     function MBDBPassword.setData(d)
@@ -77,7 +98,7 @@
             if v.platform == data.platform then
                 mData[i] = data;
                 isUpgrade = true;
-                break;
+                break ;
             end
         end
         if not isUpgrade then
@@ -88,7 +109,7 @@
 
     function MBDBPassword.remove(key, user)
         if isNilOrEmpty(key) then
-            return;
+            return ;
         end
 
         MBDBPassword.init();

@@ -15,7 +15,7 @@ do
         上的组件：getChild(transform, "offset", "Progress BarHong"):GetComponent("UISlider");
         --]]
         ---@type Coolape.CLUILoopGrid
-        objs.grid = getCC(transform, "PanelList/Grid", "CLUILoopGrid")
+        objs.grid = getCC(transform, "PanelList/Grid", "CLUILoopTable")
         ---@type TweenPosition
         objs.search = getCC(transform, "AnchorTop/search", "TweenPosition")
         objs.InputSearchKey = getCC(objs.search.transform, "InputSearchKey", "UIInput")
@@ -44,7 +44,7 @@ do
         --csSelf:invoke4Lua(function()
         --    objs.scrollView:ResetPosition();
         --end, 0.1);
-        objs.grid:setList(MBDBPassword.getData(), MBPPasswordSave.initCell);
+        MBPPasswordSave.showList({})
         MBPPasswordSave.setIndexs()
         --objs.scrollView:ResetPosition()
     end
@@ -70,10 +70,13 @@ do
 
     function MBPPasswordSave.onClickIndexCell(cell)
         local d = cell.luaTable.getData()
+        if d.isIndex then
+            return
+        end
         local index = d.index
         local pos = MBDBPassword.getPosByChar(index)
         if (pos >= 0) then
-            local orgList = MBDBPassword.getData()
+            local orgList = MBDBPassword.getDataWithCharIndex()
             local listPart1 = {};
             for i = pos, #orgList do
                 table.insert(listPart1, orgList[i]);
@@ -84,16 +87,19 @@ do
             for i = 1, pos - 1 do
                 table.insert(listPart2, orgList[i])
             end
-            objs.grid:insertList(listPart2)
+            objs.grid:insertList(listPart2, false, true)
         end
     end
 
     -- 刷新
     function MBPPasswordSave.refresh()
-        --objs.grid:refreshContentOnly(MBDBPassword.getData());
-        objs.grid:refreshContentOnly()
+        objs.grid:refreshContentOnly(MBDBPassword.getDataWithCharIndex())
     end
 
+    function MBPPasswordSave.showList(list)
+        list = list or MBDBPassword.getDataWithCharIndex()
+        objs.grid:setList(list, MBPPasswordSave.initCell);
+    end
     -- 关闭页面
     function MBPPasswordSave.hide()
     end
@@ -123,7 +129,7 @@ do
         elseif goName == "InputSearchKey" then
             objs.InputSearchKey.value = trim(objs.InputSearchKey.value)
             if isNilOrEmpty( objs.InputSearchKey.value) then
-                objs.grid:setList(MBDBPassword.getData(), MBPPasswordSave.initCell);
+                MBPPasswordSave.showList()
                 return
             end
             MBPPasswordSave.search(objs.InputSearchKey.value)
@@ -146,10 +152,10 @@ do
 
     function MBPPasswordSave.search(key)
         local ret = {}
-        local list = MBDBPassword.getData();
+        local list = MBDBPassword.getDataWithCharIndex();
         if list then
             for i, v in ipairs(list) do
-                if string.find(string.upper(v.platform), string.upper(key))
+                if  string.find(string.upper(v.platform), string.upper(key))
                         or string.find(string.upper(v.desc), string.upper(key)) then
                     table.insert(ret, v)
                 end
