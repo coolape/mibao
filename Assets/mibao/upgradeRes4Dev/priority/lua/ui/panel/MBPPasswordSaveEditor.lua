@@ -7,6 +7,7 @@ do
     local objs = {}
     local oldPlatform = ""
     local mData
+    local lastShowPassworldTime = -1
 
     -- 初始化，只会调用一次
     function MBPPasswordSaveEditor.init(csObj)
@@ -36,6 +37,7 @@ do
 
     -- 显示，在c#中。show为调用refresh，show和refresh的区别在于，当页面已经显示了的情况，当页面再次出现在最上层时，只会调用refresh
     function MBPPasswordSaveEditor.show()
+        lastShowPassworldTime = -1
         objs.inputRoot:setValue(mData)
         objs.InputPassword.value = ""
         if mData == nil then
@@ -52,6 +54,7 @@ do
 
     -- 关闭页面
     function MBPPasswordSaveEditor.hide()
+        lastShowPassworldTime = -1
         csSelf:cancelInvoke4Lua()
     end
 
@@ -67,7 +70,7 @@ do
     end
 
     -- 处理ui上的事件，例如点击等
-    function MBPPasswordSaveEditor.uiEventDelegate( go )
+    function MBPPasswordSaveEditor.uiEventDelegate(go)
         local goName = go.name
         if (goName == "ButtonBack") then
             hideTopPanel()
@@ -76,6 +79,7 @@ do
                     { cmd = "get",
                       callback = function(key)
                           objs.InputPassword.value = EnAndDecryption.decoder(mData.psd, key)
+                          lastShowPassworldTime = DateEx.nowMS + 30 * 1000
                           csSelf:invoke4Lua(
                                   function()
                                       objs.InputPassword.value = ""
@@ -88,13 +92,14 @@ do
                 return
             end
 
-            getPanelAsy("PanelSecretKey", onLoadedPanelTT, { cmd = "set",
-                                                             callback = function(key)
-                                                                 local m = objs.inputRoot:getValue(true)
-                                                                 m.psd = EnAndDecryption.encoder(objs.InputPassword.value, key)
-                                                                 MBDBPassword.addOrUpdate(m)
-                                                                 hideTopPanel()
-                                                             end })
+            getPanelAsy("PanelSecretKey", onLoadedPanelTT,
+                    { cmd = "set",
+                      callback = function(key)
+                          local m = objs.inputRoot:getValue(true)
+                          m.psd = EnAndDecryption.encoder(objs.InputPassword.value, key)
+                          MBDBPassword.addOrUpdate(m)
+                          hideTopPanel()
+                      end })
         elseif goName == "ButtonDel" then
             CLUIUtl.showConfirm("确定要删除该记录？",
                     function()
@@ -105,10 +110,16 @@ do
     end
 
     -- 当按了返回键时，关闭自己（返值为true时关闭）
-    function MBPPasswordSaveEditor.hideSelfOnKeyBack( )
+    function MBPPasswordSaveEditor.hideSelfOnKeyBack()
         return true
     end
 
+    function MBPPasswordSaveEditor.OnApplicationPause(isPause)
+        if lastShowPassworldTime > 0 and DateEx.nowMS - lastShowPassworldTime > 0 then
+            csSelf:cancelInvoke4Lua()
+            objs.InputPassword.value = ""
+        end
+    end
     --------------------------------------------
     return MBPPasswordSaveEditor
 end

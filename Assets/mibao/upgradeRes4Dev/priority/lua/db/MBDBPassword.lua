@@ -140,7 +140,13 @@
         end
         table.sort(mData,
                 function(a, b)
-                    return a.indexVal < b.indexVal
+                    if a.indexVal < b.indexVal then
+                        return true
+                    elseif a.indexVal == b.indexVal then
+                        return a.py < b.py
+                    else
+                        return false
+                    end
                 end
         )
     end
