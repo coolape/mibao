@@ -59,6 +59,7 @@ do
     RaycastHit = CS.UnityEngine.RaycastHit
     Ray = CS.UnityEngine.Ray
     Rect = CS.UnityEngine.Rect
+    BoxCollider = CS.UnityEngine.BoxCollider
 
     UICamera = CS.UICamera;
     Localization = CS.Localization;
