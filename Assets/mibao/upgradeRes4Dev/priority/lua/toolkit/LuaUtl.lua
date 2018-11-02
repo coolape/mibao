@@ -353,6 +353,18 @@ do
         --print('character_num::::',character_num);
         return false;
     end
+
+    local _BottomHeight_ = 150
+    local _TopHeight_ = 150
+    getUIContent = function(panel, top, bottom)
+        top = top or _TopHeight_
+        bottom = bottom or _BottomHeight_
+        local sizeAdjust = UIRoot.GetPixelSizeAdjustment(panel.gameObject);
+        local contentRect = Vector4(0, (bottom- top)/2,
+                Screen.width * sizeAdjust,
+                Screen.height * sizeAdjust - (bottom + top));
+        return contentRect
+    end
 end
 
 --module("LuaUtl", package.seeall)

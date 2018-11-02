@@ -6,26 +6,23 @@ do
     local transform = nil;
     MBPMain.sizeAdjust = 1;
     MBPMain.contentRect = Vector4.zero;
-    local _BottomHeight_ = 150
-    local _TopHeight_ = 150
     local objs = {}
 
     -- 初始化，只会调用一次
     function MBPMain.init(csObj)
         csSelf = csObj;
         transform = csObj.transform;
+        MBPMain.contentRect = getUIContent(csSelf)
 
-        MBPMain.sizeAdjust = UIRoot.GetPixelSizeAdjustment(csSelf.gameObject);
-        MBPMain.contentRect = Vector4(0, 0,
-                Screen.width * MBPMain.sizeAdjust,
-                Screen.height * MBPMain.sizeAdjust - (_BottomHeight_ + _TopHeight_));
+        --objs.Content = getCC(transform, "PanelContent", "UIPanel")
+        --objs.Content.transform.localPosition = Vector3.zero;
+        --objs.Content.clipOffset = Vector2.zero;
+        --objs.Content.baseClipRegion = MBPMain.contentRect;
+        -----@type UIScrollView
+        --objs.scrollView = objs.Content:GetComponent("UIScrollView");
 
-        objs.Content = getCC(transform, "PanelContent", "UIPanel")
-        objs.Content.transform.localPosition = Vector3.zero;
-        objs.Content.clipOffset = Vector2.zero;
-        objs.Content.baseClipRegion = MBPMain.contentRect;
-        ---@type UIScrollView
-        objs.scrollView = objs.Content:GetComponent("UIScrollView");
+        objs.LabelTitle = getCC(transform, "AnchorTop/offset/LabelTitle", "UILabel")
+
         objs.bottomGrid = getCC(transform, "AnchorBottom/Grid", "UIGrid")
         objs.bottomCellPrefab = getChild(objs.bottomGrid.transform, "00000").gameObject
     end
@@ -36,12 +33,13 @@ do
 
     -- 显示，在c#中。show为调用refresh，show和refresh的区别在于，当页面已经显示了的情况，当页面再次出现在最上层时，只会调用refresh
     function MBPMain.show()
-        objs.scrollView:ResetPosition()
+        --objs.scrollView:ResetPosition()
         MBPMain.setBottomBtns()
     end
 
     function MBPMain.setBottomBtns()
-        local bottomBtns = { { id = 1, name = "首页" }, { id = 9, name = "设置" } }
+        local bottomBtns = { { id = 1, name = "首页", panel = "PanelHome" },
+                             { id = 9, name = "设置", panel = "PanelSetting" } }
         local width = NumEx.getIntPart(MBPMain.contentRect.z / #bottomBtns)
         objs.bottomGrid.cellWidth = width
         CLUIUtl.resetList4Lua(objs.bottomGrid, objs.bottomCellPrefab, bottomBtns, MBPMain.initBottomBtn)
@@ -50,10 +48,18 @@ do
     function MBPMain.initBottomBtn(cell, data)
         data.width = objs.bottomGrid.cellWidth
         cell:init(data, MBPMain.onClickBottonBtn)
+        if data.id == 1 then
+            MBPMain.onClickBottonBtn(cell)
+        end
     end
 
     function MBPMain.onClickBottonBtn(cell)
-
+        local data = cell.luaTable.getData()
+        objs.LabelTitle.text = data.name
+        if CLPanelManager.topPanel ~= nil and CLPanelManager.topPanel ~= csSelf then
+            hideTopPanel()
+        end
+        getPanelAsy(data.panel, onLoadedPanelTT)
     end
 
     -- 刷新
@@ -79,20 +85,6 @@ do
     function MBPMain.uiEventDelegate(go)
         local goName = go.name;
         if (goName == "Button01") then
-            getPanelAsy("PanelPasswordSave", onLoadedPanelTT)
-            --[[
-            if isNilOrEmpty(__uid__) then
-                getPanelAsy("PanelLogin", onLoadedPanelTT, {function (uid)
-                    if uid then
-                        getPanelAsy("PanelPasswordSave", onLoadedPanelTT)
-                    end
-                end}
-                );
-            else
-                -- 密码保护
-                getPanelAsy("PanelPasswordSave", onLoadedPanelTT)
-            end
-            --]]
         end
     end
 

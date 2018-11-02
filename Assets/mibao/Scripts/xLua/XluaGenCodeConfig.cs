@@ -317,9 +317,14 @@ public static class XluaGenCodeConfig
 			"runInEditMode",
 		},
 
-		new List<string>() {
-			"Coolape.CLAssetsManager",
-			"debugKey",
-		},
-	};
+        new List<string>() {
+            "Coolape.CLAssetsManager",
+            "debugKey",
+        },
+
+        new List<string>() {
+            "UnityEngine.QualitySettings",
+            "streamingMipmapsRenderersPerFrame",
+        },
+    };
 }
