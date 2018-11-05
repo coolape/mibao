@@ -115,9 +115,12 @@ do
     end
 
     function MBPPasswordSaveEditor.OnApplicationPause(isPause)
-        if lastShowPassworldTime > 0 and DateEx.nowMS - lastShowPassworldTime > 0 then
+        if lastShowPassworldTime > 0
+                --and DateEx.nowMS - lastShowPassworldTime > 0
+        then
             csSelf:cancelInvoke4Lua()
             objs.InputPassword.value = ""
+            lastShowPassworldTime = 0
         end
     end
     --------------------------------------------
