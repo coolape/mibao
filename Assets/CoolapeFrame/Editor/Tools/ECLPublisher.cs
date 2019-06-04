@@ -1195,6 +1195,7 @@ public class ECLPublisher : EditorWindow
                 PlayerSettings.Android.keystorePass = currChlData.mKeystorePass;
                 PlayerSettings.Android.keyaliasName = currChlData.mKeyaliasName;
                 PlayerSettings.Android.keyaliasPass = currChlData.mKeyaliasPass;
+                PlayerSettings.Android.useCustomKeystore = true;
             }
             else
             {

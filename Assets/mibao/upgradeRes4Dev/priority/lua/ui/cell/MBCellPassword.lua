@@ -5,7 +5,7 @@ do
     local transform = nil;
     local objs = {}
     local mData = nil;
-    local btnTxt = "查看密码";
+    local btnTxt = "查看咪咪";
     local isShowingPsd = false
 
     -- 初始化，只调用一次
