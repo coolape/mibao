@@ -27,7 +27,11 @@ do
         objs.Content.baseClipRegion = MBPMain.contentRect
         ---@type UIScrollView
         objs.scrollView = objs.Content:GetComponent("UIScrollView")
-        objs.grid:setOldClip(objs.Content.clipOffset, objs.Content.transform.localPosition, objs.grid.transform.localPosition)
+        objs.grid:setOldClip(
+            objs.Content.clipOffset,
+            objs.Content.transform.localPosition,
+            objs.grid.transform.localPosition
+        )
 
         objs.gridIndex = getCC(transform, "Right/PanelIndexList/Grid", "UIGrid")
         objs.gridIndex.cellHeight = NumEx.getIntPart(MBPMain.contentRect.w / 27)
@@ -68,7 +72,7 @@ do
     end
 
     function MBPPasswordSave.initIndexCell(cell, data)
-        local _d = { index = data, width = objs.gridIndex.cellWidth, height = objs.gridIndex.cellHeight }
+        local _d = {index = data, width = objs.gridIndex.cellWidth, height = objs.gridIndex.cellHeight}
         cell:init(_d, MBPPasswordSave.onClickIndexCell)
     end
 
@@ -106,7 +110,7 @@ do
     end
 
     -- 网络请求的回调；cmd：指命，succ：成功失败，msg：消息；paras：服务器下行数据
-    function MBPPasswordSave.procNetwork (cmd, succ, msg, datas)
+    function MBPPasswordSave.procNetwork(cmd, succ, msg, datas)
         if (succ == 1) then
             if (cmd == NetProtoMibao.cmds.syndata) then
                 hideHotWheel()
@@ -118,7 +122,7 @@ do
     end
 
     -- 处理ui上的事件，例如点击等
-    function MBPPasswordSave.uiEventDelegate( go )
+    function MBPPasswordSave.uiEventDelegate(go)
         local goName = go.name
         if (goName == "ButtonBack") then
             hideTopPanel()
@@ -129,7 +133,7 @@ do
             objs.search:Play(isShowingSearch)
         elseif goName == "InputSearchKey" then
             objs.InputSearchKey.value = trim(objs.InputSearchKey.value)
-            if isNilOrEmpty( objs.InputSearchKey.value) then
+            if isNilOrEmpty(objs.InputSearchKey.value) then
                 MBPPasswordSave.showList()
                 return
             end
@@ -144,6 +148,7 @@ do
             MBPPasswordSave.hideSearch()
         end
     end
+
     function MBPPasswordSave.hideSearch()
         if isShowingSearch then
             isShowingSearch = false
@@ -156,8 +161,10 @@ do
         local list = MBDBPassword.getDataWithCharIndex()
         if list then
             for i, v in ipairs(list) do
-                if (v.platform and string.find(string.upper(v.platform), string.upper(key)))
-                        or (v.desc and string.find(string.upper(v.desc), string.upper(key))) then
+                if
+                    (v.platform and string.find(string.upper(v.platform), string.upper(key))) or
+                        (v.desc and string.find(string.upper(v.desc), string.upper(key)))
+                 then
                     table.insert(ret, v)
                 end
             end
@@ -170,7 +177,7 @@ do
     end
 
     -- 当按了返回键时，关闭自己（返值为true时关闭）
-    function MBPPasswordSave.hideSelfOnKeyBack( )
+    function MBPPasswordSave.hideSelfOnKeyBack()
         return true
     end
 

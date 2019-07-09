@@ -78,7 +78,7 @@ do
             getPanelAsy("PanelSecretKey", onLoadedPanelTT,
                     { cmd = "get",
                       callback = function(key)
-                          objs.InputPassword.value = EnAndDecryption.decoder(mData.psd, key)
+                          objs.InputPassword.value = SimpleCodeUtl.decrypt(mData.psd, key)
                           lastShowPassworldTime = DateEx.nowMS + 30 * 1000
                           csSelf:invoke4Lua(
                                   function()
@@ -96,7 +96,7 @@ do
                     { cmd = "set",
                       callback = function(key)
                           local m = objs.inputRoot:getValue(true)
-                          m.psd = EnAndDecryption.encoder(objs.InputPassword.value, key)
+                          m.psd = SimpleCodeUtl.encrypt(objs.InputPassword.value, key)
                           MBDBPassword.addOrUpdate(m)
                           hideTopPanel()
                       end })

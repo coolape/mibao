@@ -4,7 +4,35 @@
     local path = ""
     ---@type System.Collections.ArrayList
     local mData = nil
-    MBDBPassword.indexList = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "#" }
+    MBDBPassword.indexList = {
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T",
+        "U",
+        "V",
+        "W",
+        "X",
+        "Y",
+        "Z",
+        "#"
+    }
     MBDBPassword.indexMap = {}
     for i, v in ipairs(MBDBPassword.indexList) do
         MBDBPassword.indexMap[v] = i
@@ -28,11 +56,15 @@
     end
 
     function MBDBPassword.init()
-        path = Utl.chgToSDCard(joinStr(Application.persistentDataPath, "/coolape/mibao/", "mm_", __uid__, "_", "psdSave.d"))
+        path =
+            Utl.chgToSDCard(
+            joinStr(Application.persistentDataPath, "/coolape/mibao/", "mm_", __uid__, "_", "psdSave.d")
+        )
         if mData ~= nil then
             return
         end
         local bytes = FileEx.ReadAllBytes(path)
+        bytes = XXTEA.Decrypt(bytes, XXTEA.defaultKey)
         if bytes then
             mData = BioUtl.readObject(bytes)
         end
@@ -56,12 +88,21 @@
             return
         end
         FileEx.CreateDirectory(Path.GetDirectoryName(path))
-        FileEx.WriteAllBytes(path, BioUtl.writeObject(mData))
+        local bytes = BioUtl.writeObject(mData)
+        FileEx.WriteAllBytes(path, XXTEA.Encrypt(bytes, XXTEA.defaultKey))
     end
 
     function MBDBPassword.getData()
         MBDBPassword.init()
         return mData
+    end
+
+    function MBDBPassword.batchChgSecrekey(old, new)
+        local list = MBDBPassword.getData()
+        for i, v in ipairs(list) do
+            v.psd = SimpleCodeUtl.encrypt(SimpleCodeUtl.decoder(v.psd, old), new)
+        end
+        MBDBPassword.save()
     end
 
     function MBDBPassword.getDataWithCharIndex()
@@ -77,7 +118,7 @@
             for j = pos, #list do
                 if list[j].indexVal == indexVal then
                     if firstFound then
-                        table.insert(ret, { platform = v, isIndex = true, pyKey = v, indexVal= indexVal})
+                        table.insert(ret, {platform = v, isIndex = true, pyKey = v, indexVal = indexVal})
                         firstFound = false
                     end
                     table.insert(ret, list[j])
@@ -108,7 +149,7 @@
             if v.platform == data.platform then
                 mData[i] = data
                 isUpgrade = true
-                break 
+                break
             end
         end
         if not isUpgrade then
@@ -138,16 +179,17 @@
         if mData == nil then
             return
         end
-        table.sort(mData,
-                function(a, b)
-                    if a.indexVal < b.indexVal then
-                        return true
-                    elseif a.indexVal == b.indexVal then
-                        return a.py < b.py
-                    else
-                        return false
-                    end
+        table.sort(
+            mData,
+            function(a, b)
+                if a.indexVal < b.indexVal then
+                    return true
+                elseif a.indexVal == b.indexVal then
+                    return a.py < b.py
+                else
+                    return false
                 end
+            end
         )
     end
     --------------------------------------------

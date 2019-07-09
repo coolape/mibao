@@ -1021,6 +1021,7 @@ public class ECLPublisher : EditorWindow
 
     void chgChl4Edit()
     {
+
         resetScriptingDefineSymbols();
 
         applyIcons();
@@ -1199,6 +1200,7 @@ public class ECLPublisher : EditorWindow
             }
             else
             {
+                PlayerSettings.Android.useCustomKeystore = false;
                 PlayerSettings.Android.keystoreName = "";
                 PlayerSettings.Android.keystorePass = "";
                 PlayerSettings.Android.keyaliasName = "";

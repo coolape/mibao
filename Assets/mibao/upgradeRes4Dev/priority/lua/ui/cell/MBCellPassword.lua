@@ -74,7 +74,7 @@ do
                         { cmd = "get",
                           callback = function(key)
                               isShowingPsd = true;
-                              objs.LabelPassword.text = EnAndDecryption.decoder(MapEx.getString(mData, "psd"), key);
+                              objs.LabelPassword.text = SimpleCodeUtl.decrypt(mData.psd, key);
                               csSelf:invoke4Lua(_cell.hidePassword, 3);
                           end })
             else
